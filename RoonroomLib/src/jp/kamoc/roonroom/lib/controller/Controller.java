@@ -27,13 +27,11 @@ import jp.kamoc.roonroom.lib.serial.SerialConnectionException;
 
 public class Controller implements Operation {
 	private Operation currentOperatingMode;
-	private Map<RRL.OPERATIONG_MODE, Operation> modeMap = 
-			new HashMap<RRL.OPERATIONG_MODE, Operation>();
+	private Map<RRL.OPERATIONG_MODE, Operation> modeMap = new HashMap<RRL.OPERATIONG_MODE, Operation>();
 	private CommandSender commandSender;
 	private PacketListener packetListener;
 	private SerialAdapter serialAdapter;
-	
-	
+
 	public Controller(SerialAdapter serialAdapter) {
 		this.serialAdapter = serialAdapter;
 		try {
@@ -44,23 +42,25 @@ public class Controller implements Operation {
 		}
 		commandSender = new CommandSender(serialAdapter);
 		packetListener = new PacketListener(serialAdapter);
-		
-		OperationImpl operation = new OperationImpl(commandSender, packetListener);
+
+		OperationImpl operation = new OperationImpl(commandSender,
+				packetListener);
 		modeMap.put(RRL.OPERATIONG_MODE.PASSIVE, new PassiveMode(operation));
 		modeMap.put(RRL.OPERATIONG_MODE.SAFE, new SafeMode(operation));
 		modeMap.put(RRL.OPERATIONG_MODE.FULL, new FullMode(operation));
-		currentOperatingMode = new OffMode(operation);
+		modeMap.put(RRL.OPERATIONG_MODE.OFF, new OffMode(operation));
+		currentOperatingMode = modeMap.get(RRL.OPERATIONG_MODE.OFF);
 	}
-	
-	private void changeCurrentMode(RRL.OPERATIONG_MODE mode){
+
+	private void changeCurrentMode(RRL.OPERATIONG_MODE mode) {
 		currentOperatingMode = modeMap.get(mode);
 	}
-	
+
 	public void exec(SerialSequence serialSequence) {
 		commandSender.send(serialSequence);
 	}
-	
-	public void finish(){
+
+	public void finish() {
 		serialAdapter.close();
 		commandSender.finish();
 		packetListener.finish();
