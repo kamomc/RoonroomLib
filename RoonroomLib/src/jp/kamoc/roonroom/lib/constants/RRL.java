@@ -135,4 +135,29 @@ public final class RRL {
 			return 0;
 		}
 	}
+
+	public static enum CHARGING_STATE {
+		NOT_CHARGING, RECONDITIONING_CHARGING, FULL_CHARGING, TRICKLE_CHARGING, WAITING, CHARGING_FAULT_CONDITION;
+		public static CHARGING_STATE getState(int val){
+			if(val == 0){
+				return NOT_CHARGING;
+			}
+			if(val == 1){
+				return RECONDITIONING_CHARGING;
+			}
+			if(val == 2){
+				return FULL_CHARGING;
+			}
+			if(val == 3){
+				return TRICKLE_CHARGING;
+			}
+			if(val == 4){
+				return WAITING;
+			}
+			if(val == 5){
+				return CHARGING_FAULT_CONDITION;
+			}
+			return NOT_CHARGING;
+		}
+	}
 }

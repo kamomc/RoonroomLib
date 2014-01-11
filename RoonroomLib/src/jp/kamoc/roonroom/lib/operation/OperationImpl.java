@@ -8,9 +8,12 @@ import jp.kamoc.roonroom.lib.command.CommandSender;
 import jp.kamoc.roonroom.lib.command.SerialSequence;
 import jp.kamoc.roonroom.lib.constants.RRL;
 import jp.kamoc.roonroom.lib.constants.RRL.SONG;
+import jp.kamoc.roonroom.lib.listener.PacketListener;
+import jp.kamoc.roonroom.lib.listener.SensorListener;
 
 public class OperationImpl implements Operation {
 	CommandSender commandSender;
+	PacketListener packetListener;
 
 	private static final int OPCODE_START = 128;
 	
@@ -72,8 +75,14 @@ public class OperationImpl implements Operation {
 
 	private static final int OPCODE_PLAY = 141;
 
-	public OperationImpl(CommandSender commandSender) {
+	private static final int OPCODE_SENSORS = 142;
+	private static final int OPCODE_PAUSE_RESUME = 150;
+	private static final int STREAM_PAUSE = 0;
+	private static final int STREAM_RESUME = 1;
+
+	public OperationImpl(CommandSender commandSender, PacketListener packetListener) {
 		this.commandSender = commandSender;
+		this.packetListener = packetListener;
 	}
 	
 
@@ -420,5 +429,24 @@ public class OperationImpl implements Operation {
 	@Override
 	public void playSong(SONG number) {
 		commandSender.send(new SerialSequence(OPCODE_PLAY, number.getCode()));
+	}
+
+
+	@Override
+	public void listen(SensorListener listener) {
+		packetListener.setListener(listener);
+		commandSender.send(new SerialSequence(OPCODE_SENSORS, listener.getPacketId()));
+	}
+
+
+	@Override
+	public void pauseStream() {
+		commandSender.send(new SerialSequence(OPCODE_PAUSE_RESUME, STREAM_PAUSE));
+	}
+
+
+	@Override
+	public void resumeStream() {
+		commandSender.send(new SerialSequence(OPCODE_PAUSE_RESUME, STREAM_RESUME));
 	}
 }

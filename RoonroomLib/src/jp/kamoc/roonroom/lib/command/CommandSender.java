@@ -14,6 +14,7 @@ public class CommandSender extends Thread {
 	private final int DEFAULT_TIMEOUT = 1000;
 	private int timeout = DEFAULT_TIMEOUT;
 	private long sendStartTime = 0;
+	private boolean loop = true;
 
 	public CommandSender(SerialAdapter serialAdapter) {
 		this.serialAdapter = serialAdapter;
@@ -33,7 +34,7 @@ public class CommandSender extends Thread {
 
 	@Override
 	public void run() {
-		while (true) {
+		while (loop) {
 			if (commandQueue.size() != 0) {
 				SerialSequence serialSequence = commandQueue.remove();
 				if(sendSerialSequence(serialSequence)){
@@ -78,4 +79,7 @@ public class CommandSender extends Thread {
 		this.timeout = timeout;
 	}
 
+	public void finish(){
+		loop = false;
+	}
 }

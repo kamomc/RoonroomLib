@@ -3,6 +3,7 @@ package jp.kamoc.roonroom.lib.operation;
 import jp.kamoc.roonroom.lib.constants.RRL;
 import jp.kamoc.roonroom.lib.constants.RRL.BUTTON;
 import jp.kamoc.roonroom.lib.constants.RRL.SONG;
+import jp.kamoc.roonroom.lib.listener.SensorListener;
 
 public class OffMode implements Operation {
 	private OperationImpl operation;
@@ -113,6 +114,21 @@ public class OffMode implements Operation {
 
 	@Override
 	public void playSong(SONG number) {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public void listen(SensorListener listener) {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public void pauseStream() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public void resumeStream() {
 		throw new IllegalStateException();
 	}
 

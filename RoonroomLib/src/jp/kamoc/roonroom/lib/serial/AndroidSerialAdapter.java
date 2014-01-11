@@ -1,6 +1,9 @@
 package jp.kamoc.roonroom.lib.serial;
 
 import java.io.IOException;
+
+import jp.kamoc.roonroom.lib.listener.PacketListener;
+
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 
@@ -49,9 +52,14 @@ public class AndroidSerialAdapter implements SerialAdapter {
 	}
 
 	@Override
-	public int receive() throws SerialConnectionException {
+	public void receive() throws SerialConnectionException {
 		// TODO 自動生成されたメソッド・スタブ
-		return -1;
+	}
+
+	@Override
+	public void setPacketListener(PacketListener packetListener) {
+		// TODO 自動生成されたメソッド・スタブ
+		
 	}
 
 }

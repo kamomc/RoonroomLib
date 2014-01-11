@@ -8,6 +8,8 @@ import jp.kamoc.roonroom.lib.command.SerialSequence;
 import jp.kamoc.roonroom.lib.constants.RRL;
 import jp.kamoc.roonroom.lib.constants.RRL.BUTTON;
 import jp.kamoc.roonroom.lib.constants.RRL.SONG;
+import jp.kamoc.roonroom.lib.listener.PacketListener;
+import jp.kamoc.roonroom.lib.listener.SensorListener;
 import jp.kamoc.roonroom.lib.operation.CleaningSchedule;
 import jp.kamoc.roonroom.lib.operation.DigitLEDConfig;
 import jp.kamoc.roonroom.lib.operation.FullMode;
@@ -24,13 +26,16 @@ import jp.kamoc.roonroom.lib.serial.SerialAdapter;
 import jp.kamoc.roonroom.lib.serial.SerialConnectionException;
 
 public class Controller implements Operation {
-	private Operation currentMode;
+	private Operation currentOperatingMode;
 	private Map<RRL.OPERATIONG_MODE, Operation> modeMap = 
 			new HashMap<RRL.OPERATIONG_MODE, Operation>();
 	private CommandSender commandSender;
+	private PacketListener packetListener;
+	private SerialAdapter serialAdapter;
 	
 	
 	public Controller(SerialAdapter serialAdapter) {
+		this.serialAdapter = serialAdapter;
 		try {
 			serialAdapter.open();
 		} catch (SerialConnectionException e) {
@@ -38,131 +43,152 @@ public class Controller implements Operation {
 			return;
 		}
 		commandSender = new CommandSender(serialAdapter);
-//		PacketListener packetListener = new PacketListener(serialAdapter);
+		packetListener = new PacketListener(serialAdapter);
 		
-		OperationImpl operation = new OperationImpl(commandSender);
+		OperationImpl operation = new OperationImpl(commandSender, packetListener);
 		modeMap.put(RRL.OPERATIONG_MODE.PASSIVE, new PassiveMode(operation));
 		modeMap.put(RRL.OPERATIONG_MODE.SAFE, new SafeMode(operation));
 		modeMap.put(RRL.OPERATIONG_MODE.FULL, new FullMode(operation));
-		currentMode = new OffMode(operation);
+		currentOperatingMode = new OffMode(operation);
 	}
 	
 	private void changeCurrentMode(RRL.OPERATIONG_MODE mode){
-		currentMode = modeMap.get(mode);
+		currentOperatingMode = modeMap.get(mode);
 	}
 	
 	public void exec(SerialSequence serialSequence) {
 		commandSender.send(serialSequence);
 	}
+	
+	public void finish(){
+		serialAdapter.close();
+		commandSender.finish();
+		packetListener.finish();
+	}
 
 	@Override
 	public void start() {
-		currentMode.start();
+		currentOperatingMode.start();
 		changeCurrentMode(RRL.OPERATIONG_MODE.PASSIVE);
 	}
 
 	@Override
 	public void changeMode(RRL.OPERATIONG_MODE mode) {
-		currentMode.changeMode(mode);
+		currentOperatingMode.changeMode(mode);
 		changeCurrentMode(mode);
 	}
 
 	@Override
 	public void clean() {
-		currentMode.clean();
+		currentOperatingMode.clean();
 		changeCurrentMode(RRL.OPERATIONG_MODE.PASSIVE);
 	}
 
 	@Override
 	public void clean(RRL.CLEANING_MODE mode) {
-		currentMode.clean(mode);
+		currentOperatingMode.clean(mode);
 		changeCurrentMode(RRL.OPERATIONG_MODE.PASSIVE);
 	}
 
 	@Override
 	public void setSchedule(CleaningSchedule cleaningSchedule) {
-		currentMode.setSchedule(cleaningSchedule);
+		currentOperatingMode.setSchedule(cleaningSchedule);
 	}
 
 	@Override
 	public void clearSchedule() {
-		currentMode.clearSchedule();
+		currentOperatingMode.clearSchedule();
 	}
 
 	@Override
 	public void setDayTime(RRL.DAY day, int hour, int min) {
-		currentMode.setDayTime(day, hour, min);
+		currentOperatingMode.setDayTime(day, hour, min);
 	}
 
 	@Override
 	public void powerOff() {
-		currentMode.powerOff();
+		currentOperatingMode.powerOff();
 		changeCurrentMode(RRL.OPERATIONG_MODE.PASSIVE);
 	}
 
 	@Override
 	public void drive(int velocity, int radius) {
-		currentMode.drive(velocity, radius);
+		currentOperatingMode.drive(velocity, radius);
 	}
 
 	@Override
 	public void driveDirect(int rightVelocity, int leftVelocity) {
-		currentMode.driveDirect(rightVelocity, leftVelocity);
+		currentOperatingMode.driveDirect(rightVelocity, leftVelocity);
 	}
 
 	@Override
 	public void drivePWM(int rightWheel, int leftWheel) {
-		currentMode.drivePWM(rightWheel, leftWheel);
+		currentOperatingMode.drivePWM(rightWheel, leftWheel);
 	}
 
 	@Override
 	public void motors(MotorConfig motorConfig) {
-		currentMode.motors(motorConfig);
+		currentOperatingMode.motors(motorConfig);
 	}
 
 	@Override
 	public void motorsPWM(int mainBrush, int sideBrush, int vacuum) {
-		currentMode.motorsPWM(mainBrush, sideBrush, vacuum);
+		currentOperatingMode.motorsPWM(mainBrush, sideBrush, vacuum);
 	}
 
 	@Override
 	public void led(LEDConfig ledConfig) {
-		currentMode.led(ledConfig);
+		currentOperatingMode.led(ledConfig);
 	}
 
 	@Override
 	public void schedulingLed(SchedulingLEDConfig config) {
-		currentMode.schedulingLed(config);
+		currentOperatingMode.schedulingLed(config);
 	}
 
 	@Override
 	public void digitLedRaw(DigitLEDConfig config) {
-		currentMode.digitLedRaw(config);
+		currentOperatingMode.digitLedRaw(config);
 	}
 
 	@Override
 	public void digitLedRaw(int n) {
-		currentMode.digitLedRaw(n);
+		currentOperatingMode.digitLedRaw(n);
 	}
 
 	@Override
 	public void digitLedRaw(String str) {
-		currentMode.digitLedRaw(str);
+		currentOperatingMode.digitLedRaw(str);
 	}
 
 	@Override
 	public void button(BUTTON... buttons) {
-		currentMode.button(buttons);
+		currentOperatingMode.button(buttons);
 	}
 
 	@Override
 	public void setSong(SONG number, Song song) {
-		currentMode.setSong(number, song);
+		currentOperatingMode.setSong(number, song);
 	}
 
 	@Override
 	public void playSong(SONG number) {
-		currentMode.playSong(number);
+		currentOperatingMode.playSong(number);
+	}
+
+	@Override
+	public void listen(SensorListener listener) {
+		currentOperatingMode.listen(listener);
+	}
+
+	@Override
+	public void pauseStream() {
+		currentOperatingMode.pauseStream();
+	}
+
+	@Override
+	public void resumeStream() {
+		currentOperatingMode.resumeStream();
 	}
 
 }
