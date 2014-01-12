@@ -6,9 +6,18 @@ import jp.kamoc.roonroom.lib.constants.RRL.SONG;
 import jp.kamoc.roonroom.lib.listener.StreamListener;
 import jp.kamoc.roonroom.lib.listener.sensor.SensorListener;
 
+/**
+ * SAFEモード
+ * @author kamoc
+ *
+ */
 public class SafeMode implements Operation {
 	private OperationImpl operation;
 	
+	/**
+	 * コンストラクタ
+	 * @param operation
+	 */
 	public SafeMode(OperationImpl operation) {
 		this.operation = operation;
 	}

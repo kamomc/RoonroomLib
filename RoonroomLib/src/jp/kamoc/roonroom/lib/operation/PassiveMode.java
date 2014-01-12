@@ -6,9 +6,18 @@ import jp.kamoc.roonroom.lib.constants.RRL.SONG;
 import jp.kamoc.roonroom.lib.listener.StreamListener;
 import jp.kamoc.roonroom.lib.listener.sensor.SensorListener;
 
+/**
+ * PASSIVEモード
+ * @author kamoc
+ *
+ */
 public class PassiveMode implements Operation {
 	private OperationImpl operation;
 	
+	/**
+	 * コンストラクタ
+	 * @param operation
+	 */
 	public PassiveMode(OperationImpl operation) {
 		this.operation = operation;
 	}

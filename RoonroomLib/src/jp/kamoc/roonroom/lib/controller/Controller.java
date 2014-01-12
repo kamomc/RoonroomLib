@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jp.kamoc.roonroom.lib.command.CommandSender;
+import jp.kamoc.roonroom.lib.command.InputRequestHandler;
 import jp.kamoc.roonroom.lib.command.SerialSequence;
 import jp.kamoc.roonroom.lib.constants.RRL;
 import jp.kamoc.roonroom.lib.constants.RRL.BUTTON;
@@ -26,13 +27,23 @@ import jp.kamoc.roonroom.lib.operation.Song;
 import jp.kamoc.roonroom.lib.serial.SerialAdapter;
 import jp.kamoc.roonroom.lib.serial.SerialConnectionException;
 
+/**
+ * コントローラクラス
+ * @author kamoc
+ *
+ */
 public class Controller implements Operation {
 	private Operation currentOperatingMode;
 	private Map<RRL.OPERATIONG_MODE, Operation> modeMap = new HashMap<RRL.OPERATIONG_MODE, Operation>();
 	private CommandSender commandSender;
 	private PacketListener packetListener;
+	private InputRequestHandler inputRequestHandler;
 	private SerialAdapter serialAdapter;
 
+	/**
+	 * コンストラクタ
+	 * @param serialAdapter シリアルアダプタ
+	 */
 	public Controller(SerialAdapter serialAdapter) {
 		this.serialAdapter = serialAdapter;
 		try {
@@ -43,6 +54,7 @@ public class Controller implements Operation {
 		}
 		commandSender = new CommandSender(serialAdapter);
 		packetListener = new PacketListener(serialAdapter);
+		inputRequestHandler = new InputRequestHandler(packetListener);
 
 		OperationImpl operation = new OperationImpl(commandSender,
 				packetListener);
@@ -57,10 +69,18 @@ public class Controller implements Operation {
 		currentOperatingMode = modeMap.get(mode);
 	}
 
+	/**
+	 * 状態を無視して強制的にシリアルシーケンスを送信する
+	 * @deprecated
+	 * @param serialSequence
+	 */
 	public void exec(SerialSequence serialSequence) {
 		commandSender.send(serialSequence);
 	}
 
+	/**
+	 * シリアル通信と、実行中のスレッドを終了する
+	 */
 	public void finish() {
 		serialAdapter.close();
 		commandSender.finish();
@@ -179,22 +199,22 @@ public class Controller implements Operation {
 
 	@Override
 	public void listen(SensorListener listener) {
-		currentOperatingMode.listen(listener);
+		inputRequestHandler.listen(currentOperatingMode, listener);
 	}
 
 	@Override
 	public void pauseStream() {
-		currentOperatingMode.pauseStream();
+		inputRequestHandler.pauseStream(currentOperatingMode);
 	}
 
 	@Override
 	public void resumeStream() {
-		currentOperatingMode.resumeStream();
+		inputRequestHandler.resumeStream(currentOperatingMode);
 	}
 
 	@Override
 	public void stream(StreamListener listener) {
-		currentOperatingMode.stream(listener);
+		inputRequestHandler.stream(currentOperatingMode, listener);
 	}
 
 }

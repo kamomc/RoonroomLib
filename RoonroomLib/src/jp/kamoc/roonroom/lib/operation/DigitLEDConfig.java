@@ -6,9 +6,17 @@ import java.util.Map;
 
 import jp.kamoc.roonroom.lib.constants.RRL;
 
+/**
+ * デジタルLED設定のクラス
+ * @author kamoc
+ *
+ */
 public class DigitLEDConfig {
 	Map<RRL.DIGIT_LED, Map<RRL.DIGIT_LED_BIT, Boolean>> ledMap;
 
+	/**
+	 * コンストラクタ
+	 */
 	public DigitLEDConfig() {
 		ledMap = new HashMap<RRL.DIGIT_LED, Map<RRL.DIGIT_LED_BIT, Boolean>>();
 		for (RRL.DIGIT_LED raw : RRL.DIGIT_LED.values()) {
@@ -20,6 +28,11 @@ public class DigitLEDConfig {
 		}
 	}
 
+	/**
+	 * LEDを点灯する
+	 * @param raw LEDの列
+	 * @param bits 点灯する箇所
+	 */
 	public void setRightOn(RRL.DIGIT_LED raw, RRL.DIGIT_LED_BIT... bits) {
 		Map<RRL.DIGIT_LED_BIT, Boolean> map = new HashMap<RRL.DIGIT_LED_BIT, Boolean>();
 		for (RRL.DIGIT_LED_BIT bit : RRL.DIGIT_LED_BIT.values()) {
@@ -28,6 +41,11 @@ public class DigitLEDConfig {
 		ledMap.put(raw, map);
 	}
 
+	/**
+	 * 命令値を取得する
+	 * @param raw LEDの列
+	 * @return 命令値
+	 */
 	public int getValue(RRL.DIGIT_LED raw) {
 		Map<RRL.DIGIT_LED_BIT, Boolean> map = ledMap.get(raw);
 		int result = 0;

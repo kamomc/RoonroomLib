@@ -1,5 +1,13 @@
 package jp.kamoc.roonroom.lib.constants;
 
+
+
+/**
+ * RoonRoomLibの定数クラス
+ * @author kamoc
+ *
+ */
+@SuppressWarnings("javadoc")
 public final class RRL {
 
 	public static enum LED_RESERVED {

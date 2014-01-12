@@ -2,6 +2,11 @@ package jp.kamoc.roonroom.lib.operation;
 
 import jp.kamoc.roonroom.lib.constants.RRL;
 
+/**
+ * モーターの設定クラス
+ * @author kamoc
+ *
+ */
 public class MotorConfig {
 	private boolean mainBrush;
 	private boolean sideBrush;
@@ -10,29 +15,57 @@ public class MotorConfig {
 	private RRL.SIDE_BRUSH_DIRECTION sideBrushDirection = RRL.SIDE_BRUSH_DIRECTION.CLOCKWISE;
 	private boolean[] reserved = new boolean[] { false, false, false };
 
+	/**
+	 * コンストラクタ
+	 */
 	public MotorConfig() {
 	}
 
+	/**
+	 * メインブラシの駆動状態を設定する
+	 * @param mainBrush
+	 */
 	public void setMainBrush(boolean mainBrush) {
 		this.mainBrush = mainBrush;
 	}
 
+	/**
+	 * サイドブラシの駆動状態を設定する
+	 * @param sideBrush
+	 */
 	public void setSideBrush(boolean sideBrush) {
 		this.sideBrush = sideBrush;
 	}
 
+	/**
+	 * 吸引状態を設定する
+	 * @param vacuum
+	 */
 	public void setVacuum(boolean vacuum) {
 		this.vacuum = vacuum;
 	}
 
+	/**
+	 * メインブラシの回転方向を設定する
+	 * @param mainBrushDirection
+	 */
 	public void setMainBrushDirection(RRL.MAIN_BRUSH_DIRECTION mainBrushDirection) {
 		this.mainBrushDirection = mainBrushDirection;
 	}
 
+	/**
+	 * サイドブラシの回転方向を設定する
+	 * @param sideBrushDirection
+	 */
 	public void setSideBrushDirection(RRL.SIDE_BRUSH_DIRECTION sideBrushDirection) {
 		this.sideBrushDirection = sideBrushDirection;
 	}
 
+	/**
+	 * 未割り当てビットを設定する
+	 * @param bit
+	 * @param state
+	 */
 	public void setReserverd(RRL.MOTORS_RESERVED bit, boolean state) {
 		switch (bit) {
 		case BIT_5:
@@ -49,6 +82,10 @@ public class MotorConfig {
 		}
 	}
 
+	/**
+	 * 命令値を取得する
+	 * @return 命令値
+	 */
 	public int getValue() {
 		int result = 0;
 		if (sideBrush) {

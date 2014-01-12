@@ -1,6 +1,6 @@
 package jp.kamoc.roonroom.lib.serial;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "javadoc" })
 public class SerialConnectionException extends Exception {
 	public SerialConnectionException() {
 		super();

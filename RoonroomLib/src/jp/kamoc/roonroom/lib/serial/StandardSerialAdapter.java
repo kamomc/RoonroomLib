@@ -11,6 +11,11 @@ import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 
+/**
+ * 標準のシリアルアダプタ
+ * @author kamoc
+ *
+ */
 public class StandardSerialAdapter implements SerialAdapter {
 	private String deviceName;
 	private String appName;
@@ -22,6 +27,12 @@ public class StandardSerialAdapter implements SerialAdapter {
 	private InputStream inputStream;
 	private PacketListener packetListener;
 
+	/**
+	 * コンストラクタ
+	 * @param deviceName デバイス名
+	 * @param appName アプリケーション名
+	 * @param timeout コネクション開始のタイムアウト値
+	 */
 	public StandardSerialAdapter(String deviceName, String appName, int timeout) {
 		this.deviceName = deviceName;
 		this.appName = appName;

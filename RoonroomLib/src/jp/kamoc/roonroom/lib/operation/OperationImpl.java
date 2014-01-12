@@ -12,6 +12,11 @@ import jp.kamoc.roonroom.lib.listener.PacketListener;
 import jp.kamoc.roonroom.lib.listener.StreamListener;
 import jp.kamoc.roonroom.lib.listener.sensor.SensorListener;
 
+/**
+ * 命令実行クラス
+ * @author kamoc
+ *
+ */
 public class OperationImpl implements Operation {
 	CommandSender commandSender;
 	PacketListener packetListener;
@@ -82,6 +87,11 @@ public class OperationImpl implements Operation {
 	private static final int STREAM_RESUME = 1;
 	private static final int OPCODE_STREAM = 148;
 
+	/**
+	 * コンストラクタ
+	 * @param commandSender
+	 * @param packetListener
+	 */
 	public OperationImpl(CommandSender commandSender,
 			PacketListener packetListener) {
 		this.commandSender = commandSender;
@@ -423,7 +433,6 @@ public class OperationImpl implements Operation {
 
 	@Override
 	public void listen(SensorListener listener) {
-		packetListener.setListener(listener);
 		commandSender.send(new SerialSequence(OPCODE_SENSORS, listener
 				.getPacketId()));
 	}
@@ -442,7 +451,7 @@ public class OperationImpl implements Operation {
 
 	@Override
 	public void stream(StreamListener listener) {
-		int n = listener.getNumberOfListeners();
+		int n = listener.size();
 		int[] sequence = new int[n + 2];
 		int i = 0;
 		sequence[i++] = OPCODE_STREAM;

@@ -6,9 +6,18 @@ import jp.kamoc.roonroom.lib.constants.RRL.SONG;
 import jp.kamoc.roonroom.lib.listener.StreamListener;
 import jp.kamoc.roonroom.lib.listener.sensor.SensorListener;
 
+/**
+ * FULLモード
+ * @author kamoc
+ *
+ */
 public class FullMode implements Operation {
 	private OperationImpl operation;
 	
+	/**
+	 * コンストラクタ
+	 * @param operation
+	 */
 	public FullMode(OperationImpl operation) {
 		this.operation = operation;
 	}

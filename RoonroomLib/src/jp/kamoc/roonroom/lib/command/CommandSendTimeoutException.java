@@ -1,6 +1,6 @@
 package jp.kamoc.roonroom.lib.command;
 
-@SuppressWarnings({ "serial" })
+@SuppressWarnings({ "serial", "javadoc" })
 public class CommandSendTimeoutException extends Exception {
 	public CommandSendTimeoutException() {
 		super();

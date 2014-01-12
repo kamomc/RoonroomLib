@@ -1,6 +1,10 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
 
+/**
+ * @author kamoc
+ *
+ */
 public abstract class AngleListener implements SensorListener {
 
 	@Override

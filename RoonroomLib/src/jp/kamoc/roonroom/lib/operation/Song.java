@@ -3,6 +3,11 @@ package jp.kamoc.roonroom.lib.operation;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 楽曲クラス
+ * @author kamoc
+ *
+ */
 public class Song {
 	private static final int MAX_LENGTH = 16;
 	private static final int MAX_PITCH = 127;
@@ -21,9 +26,18 @@ public class Song {
 		}
 	}
 
+	/**
+	 * コンストラクタ
+	 */
 	public Song() {
 	}
 
+	/**
+	 * 音符を追加する
+	 * @param pitch 音階(31〜107)
+	 * @param duration 長さ(1あたり1/64秒)
+	 * @return 自身のインスタンス
+	 */
 	public Song putNote(int pitch, int duration) {
 		if (list.size() > MAX_LENGTH) {
 			return this;
@@ -46,10 +60,18 @@ public class Song {
 		return this;
 	}
 	
+	/**
+	 * 楽曲の長さを取得する
+	 * @return 長さ
+	 */
 	public int length(){
 		return list.size();
 	}
 	
+	/**
+	 * 命令値を取得する
+	 * @return 命令値
+	 */
 	public int[] getSequence(){
 		int[] result;
 		result = new int[length()*2];

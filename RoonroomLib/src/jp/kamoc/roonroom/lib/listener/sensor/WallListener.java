@@ -25,7 +25,7 @@ public abstract class WallListener implements SensorListener {
 			onReceive(false);
 		}
 	}
-
+	
 	public abstract void onReceive(boolean wallSeen);
 
 }

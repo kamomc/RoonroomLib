@@ -1,6 +1,12 @@
 package jp.kamoc.roonroom.lib.util;
 
+/**
+ * ビットを取り扱うユーティリティ
+ * @author kamoc
+ *
+ */
 public class BitUtil {
+	@SuppressWarnings("javadoc")
 	public enum BIT {
 		BIT_0, BIT_1, BIT_2, BIT_3, BIT_4, BIT_5, BIT_6, BIT_7;
 		public int getInt() {
@@ -26,6 +32,12 @@ public class BitUtil {
 		}
 	}
 
+	/**
+	 * 指定したビットの値が1かどうかを取得する
+	 * @param val 判定対象の値
+	 * @param bit 位置
+	 * @return 1かどうか
+	 */
 	public static boolean isTrue(int val, BIT bit) {
 		int tmp = 0;
 		tmp = val << (31-bit.getInt());

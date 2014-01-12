@@ -11,10 +11,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.hardware.usb.UsbManager;
 
+/**
+ * Android用シリアルアダプタ
+ * @author kamoc
+ *
+ */
 public class AndroidSerialAdapter implements SerialAdapter {
 	private Activity activity;
 	private UsbSerialDriver usbSerialDriver;
 	
+	/**
+	 * コンストラクタ
+	 * @param activity
+	 */
 	public AndroidSerialAdapter(Activity activity) {
 		this.activity = activity;
 	}

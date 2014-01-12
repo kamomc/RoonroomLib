@@ -28,6 +28,6 @@ public abstract class BumpAndWheelDropListener implements SensorListener {
 		boolean bumpRight = BitUtil.isTrue(value, BIT.BIT_0);
 		onReceive(wheelDropLeft, wheelDropRight, bumpLeft, bumpRight);
 	}
-	
+
 	abstract public void onReceive(boolean wheelDropLeft, boolean wheelDropRight, boolean bumpLeft, boolean bumpRight);
 }

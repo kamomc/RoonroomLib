@@ -2,6 +2,11 @@ package jp.kamoc.roonroom.lib.operation;
 
 import jp.kamoc.roonroom.lib.constants.RRL;
 
+/**
+ * LEDの設定クラス
+ * @author kamoc
+ *
+ */
 public class LEDConfig {
 	private static final int MAX_COLOR = 255;
 	private static final int MIN_COLOR = 0;
@@ -15,6 +20,9 @@ public class LEDConfig {
 	private int color;
 	private int intensity;
 	
+	/**
+	 * コンストラクタ
+	 */
 	public LEDConfig() {
 		reserved = new boolean[]{ false, false, false, false };
 	}
@@ -34,30 +42,59 @@ public class LEDConfig {
 		}
 	}
 	
+	/**
+	 * CheckRobotLEDの点灯を設定する
+	 * @param checkRobot
+	 */
 	public void setCheckRobot(boolean checkRobot) {
 		this.checkRobot = checkRobot;
 	}
 
+	/**
+	 * DockLEDの点灯を設定する
+	 * @param dock
+	 */
 	public void setDock(boolean dock) {
 		this.dock = dock;
 	}
 
+	/**
+	 * SpotLEDの点灯を設定する
+	 * @param spot
+	 */
 	public void setSpot(boolean spot) {
 		this.spot = spot;
 	}
 
+	/**
+	 * DebrisLEDの点灯を設定する
+	 * @param debris
+	 */
 	public void setDebris(boolean debris) {
 		this.debris = debris;
 	}
 
+	/**
+	 * バッテリLEDの点灯色を設定する
+	 * @param color 0:緑 〜 255:赤
+	 */
 	public void setColor(int color) {
 		this.color = color;
 	}
 
+	/**
+	 * バッテリLEDの明るさを設定する
+	 * @param intensity 0:消灯 〜 255: 全灯
+	 */
 	public void setIntensity(int intensity) {
 		this.intensity = intensity;
 	}
 
+	/**
+	 * 未割り当てビットの値を設定する(ルンバのバージョン・機種によっては使える場合あり)
+	 * @param bit
+	 * @param state
+	 */
 	public void setReserved(RRL.LED_RESERVED bit, boolean state){
 		switch (bit) {
 		case BIT_4:
@@ -77,6 +114,10 @@ public class LEDConfig {
 		}
 	}
 
+	/**
+	 * 命令値を取得する
+	 * @return 命令値
+	 */
 	public int getValue() {
 		adjust();
 		int result = 0;
@@ -107,9 +148,17 @@ public class LEDConfig {
 		return result;
 	}
 	
+	/**
+	 * バッテリLEDの色の値を取得する
+	 * @return 色の値
+	 */
 	public int getColor() {
 		return color;
 	}
+	/**
+	 * バッテリLEDの明るさの値を取得する
+	 * @return 明るさの値
+	 */
 	public int getIntensity() {
 		return intensity;
 	}

@@ -6,9 +6,18 @@ import jp.kamoc.roonroom.lib.constants.RRL.SONG;
 import jp.kamoc.roonroom.lib.listener.StreamListener;
 import jp.kamoc.roonroom.lib.listener.sensor.SensorListener;
 
+/**
+ * OFFモード(初期状態)
+ * @author kamoc
+ *
+ */
 public class OffMode implements Operation {
 	private OperationImpl operation;
 
+	/**
+	 * コンストラクタ
+	 * @param operation
+	 */
 	public OffMode(OperationImpl operation) {
 		this.operation = operation;
 	}

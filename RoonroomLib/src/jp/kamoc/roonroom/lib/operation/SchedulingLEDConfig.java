@@ -5,6 +5,11 @@ import java.util.Map;
 
 import jp.kamoc.roonroom.lib.constants.RRL;
 
+/**
+ * スケジューリングLEDの設定クラス
+ * @author kamoc
+ *
+ */
 public class SchedulingLEDConfig {
 	private Map<RRL.DAY, Boolean> weekday = new HashMap<RRL.DAY, Boolean>();
 	private boolean colon;
@@ -15,6 +20,9 @@ public class SchedulingLEDConfig {
 	private boolean[] schedulingReserved;
 	private boolean[] weekdayReserved;
 
+	/**
+	 * コンストラクタ
+	 */
 	public SchedulingLEDConfig() {
 		schedulingReserved = new boolean[] { false, false, false };
 		weekdayReserved = new boolean[] { false };
@@ -23,30 +31,60 @@ public class SchedulingLEDConfig {
 		}
 	}
 
+	/**
+	 * コロンの点灯状態を設定する
+	 * @param colon
+	 */
 	public void setColon(boolean colon) {
 		this.colon = colon;
 	}
 
+	/**
+	 * PMの点灯状態を設定する
+	 * @param pm
+	 */
 	public void setPm(boolean pm) {
 		this.pm = pm;
 	}
 
+	/**
+	 * AMの点灯状態を設定する
+	 * @param am
+	 */
 	public void setAm(boolean am) {
 		this.am = am;
 	}
 
+	/**
+	 * CLOCKの点灯状態を設定する
+	 * @param clock
+	 */
 	public void setClock(boolean clock) {
 		this.clock = clock;
 	}
 
+	/**
+	 * SCHEDULEの点灯状態を設定する
+	 * @param schedule
+	 */
 	public void setSchedule(boolean schedule) {
 		this.schedule = schedule;
 	}
 
+	/**
+	 * 曜日ランプの点灯状態を設定する
+	 * @param day 曜日
+	 * @param state 状態
+	 */
 	public void setWeekday(RRL.DAY day, boolean state) {
 		weekday.put(day, state);
 	}
 
+	/**
+	 * WeekdayLEDの未割り当てビットを設定する
+	 * @param bit
+	 * @param state
+	 */
 	public void setWeekdayReserved(RRL.WEEKDAY_LED_RESERVED bit,
 			boolean state) {
 		switch (bit) {
@@ -58,6 +96,11 @@ public class SchedulingLEDConfig {
 		}
 	}
 
+	/**
+	 * SchedulingLEDの未割り当てビットを設定する
+	 * @param bit
+	 * @param state
+	 */
 	public void setSchedulingReserved(RRL.SCHEDULING_LED_RESERVED bit,
 			boolean state) {
 		switch (bit) {
@@ -75,6 +118,10 @@ public class SchedulingLEDConfig {
 		}
 	}
 
+	/**
+	 * Weekdayの命令値を取得する
+	 * @return 命令値
+	 */
 	public int getWeekdayValue() {
 		int result = 0;
 		for (RRL.DAY day : RRL.DAY.values()) {
@@ -89,6 +136,10 @@ public class SchedulingLEDConfig {
 		return result;
 	}
 	
+	/**
+	 * Schedulingの命令値を取得する
+	 * @return 命令値
+	 */
 	public int getSchedulingValue(){
 		int result = 0;
 		if(colon){
