@@ -1,5 +1,10 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
+/**
+ * Requested Right Velocity
+ * @author kamoc
+ *
+ */
 public abstract class RequestedRightVelocityListener implements SensorListener {
 
 	@Override

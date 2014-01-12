@@ -1,6 +1,11 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
 
+/**
+ * Cliff Right Signal
+ * @author kamoc
+ *
+ */
 public abstract class CliffRightSignalListener implements SensorListener {
 
 	@Override

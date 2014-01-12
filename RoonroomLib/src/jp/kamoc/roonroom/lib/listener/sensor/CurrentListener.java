@@ -1,6 +1,11 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
 
+/**
+ * Current
+ * @author kamoc
+ *
+ */
 public abstract class CurrentListener implements SensorListener {
 
 	@Override

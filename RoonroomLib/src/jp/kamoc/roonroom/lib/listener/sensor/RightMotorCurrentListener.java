@@ -1,5 +1,10 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
+/**
+ * Right Motor Current
+ * @author kamoc
+ *
+ */
 public abstract class RightMotorCurrentListener implements SensorListener {
 
 	@Override

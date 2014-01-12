@@ -1,5 +1,10 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
+/**
+ * Wall
+ * @author kamoc
+ *
+ */
 public abstract class WallListener implements SensorListener {
 
 	@Override
@@ -26,6 +31,9 @@ public abstract class WallListener implements SensorListener {
 		}
 	}
 	
+	/**
+	 * @param wallSeen 壁があるか
+	 */
 	public abstract void onReceive(boolean wallSeen);
 
 }

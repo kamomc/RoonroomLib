@@ -2,6 +2,11 @@ package jp.kamoc.roonroom.lib.listener.sensor;
 
 import jp.kamoc.roonroom.lib.constants.RRL;
 
+/**
+ * OI Mode
+ * @author kamoc
+ *
+ */
 public abstract class OIModeListener implements SensorListener {
 
 	@Override
@@ -24,6 +29,9 @@ public abstract class OIModeListener implements SensorListener {
 		onReceive(RRL.OPERATIONG_MODE.getMode(value));
 	}
 
+	/**
+	 * @param mode
+	 */
 	public abstract void onReceive(RRL.OPERATIONG_MODE mode);
 
 }

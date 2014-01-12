@@ -1,5 +1,10 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
+/**
+ * Requested Radius
+ * @author kamoc
+ *
+ */
 public abstract class RequestedRadiusListener implements SensorListener {
 
 	@Override

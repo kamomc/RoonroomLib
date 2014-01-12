@@ -1,5 +1,10 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
+/**
+ * Song Playing
+ * @author kamoc
+ *
+ */
 public abstract class SongPlayListener implements SensorListener {
 
 	@Override
@@ -26,5 +31,8 @@ public abstract class SongPlayListener implements SensorListener {
 		}
 	}
 
+	/**
+	 * @param play
+	 */
 	public abstract void onReceive(boolean play);
 }

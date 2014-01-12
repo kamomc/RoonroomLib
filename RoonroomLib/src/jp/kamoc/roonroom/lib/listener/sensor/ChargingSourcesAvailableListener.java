@@ -3,7 +3,12 @@ package jp.kamoc.roonroom.lib.listener.sensor;
 import jp.kamoc.roonroom.lib.util.BitUtil;
 import jp.kamoc.roonroom.lib.util.BitUtil.BIT;
 
-public abstract class ChargeSourceListener implements SensorListener {
+/**
+ * Charging Sources Available
+ * @author kamoc
+ *
+ */
+public abstract class ChargingSourcesAvailableListener implements SensorListener {
 
 	@Override
 	public int getDataBytes() {
@@ -23,10 +28,14 @@ public abstract class ChargeSourceListener implements SensorListener {
 	@Override
 	public void onReceive(int value) {
 		boolean homeBase = BitUtil.isTrue(value, BIT.BIT_1);
-		boolean internalChager = BitUtil.isTrue(value, BIT.BIT_0);
-		onReceive(homeBase, internalChager);
+		boolean internalCharger = BitUtil.isTrue(value, BIT.BIT_0);
+		onReceive(homeBase, internalCharger);
 	}
 	
-	public abstract void onReceive(boolean homeBase, boolean internalChager);
+	/**
+	 * @param homeBase
+	 * @param internalCharger
+	 */
+	public abstract void onReceive(boolean homeBase, boolean internalCharger);
 
 }

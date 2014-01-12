@@ -1,6 +1,11 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
 
+/**
+ * Infrared Character Left
+ * @author kamoc
+ *
+ */
 public abstract class InfraredCharacterLeftListener implements SensorListener {
 
 	@Override

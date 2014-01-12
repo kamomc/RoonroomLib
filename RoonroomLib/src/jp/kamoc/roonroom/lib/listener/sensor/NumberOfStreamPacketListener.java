@@ -1,6 +1,11 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
 
+/**
+ * Number of Stream Packets
+ * @author kamoc
+ *
+ */
 public abstract class NumberOfStreamPacketListener implements SensorListener {
 
 	@Override

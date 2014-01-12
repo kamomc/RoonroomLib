@@ -1,6 +1,11 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
 
+/**
+ * Light Bump Center Right Signal
+ * @author kamoc
+ *
+ */
 public abstract class LightBumpCenterRightSignalListener implements SensorListener {
 
 	@Override

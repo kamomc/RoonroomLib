@@ -2,6 +2,7 @@ package jp.kamoc.roonroom.lib.listener.sensor;
 
 
 /**
+ * Angle
  * @author kamoc
  *
  */

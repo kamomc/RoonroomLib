@@ -2,7 +2,12 @@ package jp.kamoc.roonroom.lib.listener.sensor;
 
 import jp.kamoc.roonroom.lib.constants.RRL;
 
-public abstract class ChargintStateListener implements SensorListener {
+/**
+ * Charging State
+ * @author kamoc
+ *
+ */
+public abstract class ChargingStateListener implements SensorListener {
 
 	@Override
 	public int getDataBytes() {
@@ -24,6 +29,9 @@ public abstract class ChargintStateListener implements SensorListener {
 		onReceive(RRL.CHARGING_STATE.getState(value));
 	}
 
+	/**
+	 * @param state 充電状態
+	 */
 	public abstract void onReceive(RRL.CHARGING_STATE state);
 
 }

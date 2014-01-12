@@ -1,5 +1,10 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
+/**
+ * Left Encoder Counts
+ * @author kamoc
+ *
+ */
 public abstract class RightEncoderCountListener implements SensorListener {
 
 	@Override

@@ -1,5 +1,10 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
+/**
+ * Wall Signal
+ * @author kamoc
+ *
+ */
 public abstract class WallSignalListener implements SensorListener {
 
 	@Override

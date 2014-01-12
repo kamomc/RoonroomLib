@@ -1,6 +1,11 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
 
+/**
+ * Battery Capacity
+ * @author kamoc
+ *
+ */
 public abstract class BatteryCapacityListener implements SensorListener {
 
 	@Override

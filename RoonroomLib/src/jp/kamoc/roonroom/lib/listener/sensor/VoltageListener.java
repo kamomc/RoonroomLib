@@ -1,5 +1,10 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
+/**
+ * Voltage
+ * @author kamoc
+ *
+ */
 public abstract class VoltageListener implements SensorListener {
 
 	@Override

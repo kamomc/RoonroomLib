@@ -1,5 +1,10 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
+/**
+ * Stasis
+ * @author kamoc
+ *
+ */
 public abstract class StasisListener implements SensorListener {
 
 	@Override
@@ -26,6 +31,9 @@ public abstract class StasisListener implements SensorListener {
 		}
 	}
 	
+	/**
+	 * @param stasis
+	 */
 	public abstract void onReceive(boolean stasis);
 
 }

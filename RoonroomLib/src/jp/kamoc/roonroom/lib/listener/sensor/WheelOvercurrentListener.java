@@ -3,6 +3,11 @@ package jp.kamoc.roonroom.lib.listener.sensor;
 import jp.kamoc.roonroom.lib.util.BitUtil;
 import jp.kamoc.roonroom.lib.util.BitUtil.BIT;
 
+/**
+ * Wheel Overcurrents
+ * @author kamoc
+ *
+ */
 public abstract class WheelOvercurrentListener implements SensorListener {
 
 	@Override
@@ -29,6 +34,12 @@ public abstract class WheelOvercurrentListener implements SensorListener {
 		onReceive(leftWheel, rightWheel, mainBrush, sideBrush);
 	}
 
+	/**
+	 * @param leftWheel 左車輪がOvercurrentであるか
+	 * @param rightWheel 右車輪がOvercurrentであるか
+	 * @param mainBrush メインブラシがOvercurrentであるか
+	 * @param sideBrush サイドブラシがOvercurrentであるか
+	 */
 	public abstract void onReceive(boolean leftWheel, boolean rightWheel,
 			boolean mainBrush, boolean sideBrush);
 

@@ -1,6 +1,11 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
 
+/**
+ * Cliff Front Right
+ * @author kamoc
+ *
+ */
 public abstract class CliffFrontRightListener implements SensorListener {
 
 	@Override
@@ -27,5 +32,8 @@ public abstract class CliffFrontRightListener implements SensorListener {
 		}
 	}
 
+	/**
+	 * @param cliff 壁があるか
+	 */
 	public abstract void onReceive(boolean cliff);
 }

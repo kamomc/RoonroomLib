@@ -1,6 +1,11 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
 
+/**
+ * Dirt
+ * @author kamoc
+ *
+ */
 public abstract class DirtListener implements SensorListener {
 
 	@Override
@@ -17,4 +22,5 @@ public abstract class DirtListener implements SensorListener {
 	public int getPacketId() {
 		return 15;
 	}
+	
 }

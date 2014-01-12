@@ -1,6 +1,11 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
 
+/**
+ * Main Brush Motor Current
+ * @author kamoc
+ *
+ */
 public abstract class MainBrushMotorCurrentListener implements SensorListener {
 
 	@Override

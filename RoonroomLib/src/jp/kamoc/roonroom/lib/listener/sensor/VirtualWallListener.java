@@ -1,5 +1,10 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
+/**
+ * Virtual Wall
+ * @author kamoc
+ *
+ */
 public abstract class VirtualWallListener implements SensorListener {
 
 	@Override
@@ -26,6 +31,9 @@ public abstract class VirtualWallListener implements SensorListener {
 		}
 	}
 
+	/**
+	 * @param virtualWall バーチャルウォールがあるか
+	 */
 	public abstract void onReceive(boolean virtualWall);
 
 }

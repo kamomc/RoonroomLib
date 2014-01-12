@@ -1,5 +1,10 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
+/**
+ * Side Brush Motor Current
+ * @author kamoc
+ *
+ */
 public abstract class SideBrushMotorCurrent implements SensorListener {
 
 	@Override
