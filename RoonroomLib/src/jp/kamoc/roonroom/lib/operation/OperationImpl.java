@@ -9,14 +9,15 @@ import jp.kamoc.roonroom.lib.command.SerialSequence;
 import jp.kamoc.roonroom.lib.constants.RRL;
 import jp.kamoc.roonroom.lib.constants.RRL.SONG;
 import jp.kamoc.roonroom.lib.listener.PacketListener;
-import jp.kamoc.roonroom.lib.listener.SensorListener;
+import jp.kamoc.roonroom.lib.listener.StreamListener;
+import jp.kamoc.roonroom.lib.listener.sensor.SensorListener;
 
 public class OperationImpl implements Operation {
 	CommandSender commandSender;
 	PacketListener packetListener;
 
 	private static final int OPCODE_START = 128;
-	
+
 	private static final int OPCODE_PASSIVE = 128;
 	private static final int OPCODE_SAFE = 131;
 	private static final int OPCODE_FULL = 132;
@@ -25,13 +26,13 @@ public class OperationImpl implements Operation {
 	private static final int OPCODE_MAX = 136;
 	private static final int OPCODE_SPOT = 134;
 	private static final int OPCODE_DOCK = 143;
-	
+
 	private static final int OPCODE_SCHEDULE = 167;
 
 	private static final int OPCODE_POWER = 133;
 
 	private static final int OPCODE_SET_DAY_TIME = 168;
-	
+
 	private static final int MAX_VELOCITY = 500;
 	private static final int MIN_VELOCITY = -500;
 	private static final int MAX_RADIUS = 2000;
@@ -79,12 +80,13 @@ public class OperationImpl implements Operation {
 	private static final int OPCODE_PAUSE_RESUME = 150;
 	private static final int STREAM_PAUSE = 0;
 	private static final int STREAM_RESUME = 1;
+	private static final int OPCODE_STREAM = 148;
 
-	public OperationImpl(CommandSender commandSender, PacketListener packetListener) {
+	public OperationImpl(CommandSender commandSender,
+			PacketListener packetListener) {
 		this.commandSender = commandSender;
 		this.packetListener = packetListener;
 	}
-	
 
 	private int adjustRadius(int radius) {
 		if (radius > MAX_RADIUS) {
@@ -105,7 +107,7 @@ public class OperationImpl implements Operation {
 		}
 		return velocity;
 	}
-	
+
 	private int adjustWheelPWM(int pwm) {
 		if (pwm > MAX_WHEEL_PWM) {
 			return MAX_WHEEL_PWM;
@@ -115,27 +117,27 @@ public class OperationImpl implements Operation {
 		}
 		return pwm;
 	}
-	
-	private int adjustBrushPWM(int pwm){
-		if(pwm > MAX_BRUSH_PWM){
+
+	private int adjustBrushPWM(int pwm) {
+		if (pwm > MAX_BRUSH_PWM) {
 			return MAX_BRUSH_PWM;
 		}
-		if(pwm < MIN_BRUSH_PWM){
+		if (pwm < MIN_BRUSH_PWM) {
 			return MIN_BRUSH_PWM;
 		}
 		return pwm;
 	}
-	
-	private int adjustVacuumPWM(int pwm){
-		if(pwm > MAX_VACUUM_PWM){
+
+	private int adjustVacuumPWM(int pwm) {
+		if (pwm > MAX_VACUUM_PWM) {
 			return MAX_VACUUM_PWM;
 		}
-		if(pwm < MIN_VACUUM_PWM){
+		if (pwm < MIN_VACUUM_PWM) {
 			return MIN_VACUUM_PWM;
 		}
 		return pwm;
 	}
-	
+
 	private int[] convertTwoSequence(int val) {
 		try {
 			String hex = String.format("%032x", val);
@@ -148,17 +150,23 @@ public class OperationImpl implements Operation {
 			return new int[] { 0, 0 };
 		}
 	}
-	
-	/* (非 Javadoc)
+
+	/*
+	 * (非 Javadoc)
+	 * 
 	 * @see jp.kamoc.roonroom.lib.controller.Operation#start()
 	 */
 	@Override
-	public void start(){
+	public void start() {
 		commandSender.send(new SerialSequence(OPCODE_START));
 	}
 
-	/* (非 Javadoc)
-	 * @see jp.kamoc.roonroom.lib.controller.Operation#changeMode(jp.kamoc.roonroom.lib.controller.InstructionSet.OperatingMode)
+	/*
+	 * (非 Javadoc)
+	 * 
+	 * @see
+	 * jp.kamoc.roonroom.lib.controller.Operation#changeMode(jp.kamoc.roonroom
+	 * .lib.controller.InstructionSet.OperatingMode)
 	 */
 	@Override
 	public void changeMode(RRL.OPERATIONG_MODE mode) {
@@ -177,7 +185,9 @@ public class OperationImpl implements Operation {
 		}
 	}
 
-	/* (非 Javadoc)
+	/*
+	 * (非 Javadoc)
+	 * 
 	 * @see jp.kamoc.roonroom.lib.controller.Operation#clean()
 	 */
 	@Override
@@ -185,8 +195,12 @@ public class OperationImpl implements Operation {
 		clean(RRL.CLEANING_MODE.DEFAULT);
 	}
 
-	/* (非 Javadoc)
-	 * @see jp.kamoc.roonroom.lib.controller.Operation#clean(jp.kamoc.roonroom.lib.controller.InstructionSet.CleaningMode)
+	/*
+	 * (非 Javadoc)
+	 * 
+	 * @see
+	 * jp.kamoc.roonroom.lib.controller.Operation#clean(jp.kamoc.roonroom.lib
+	 * .controller.InstructionSet.CleaningMode)
 	 */
 	@Override
 	public void clean(RRL.CLEANING_MODE mode) {
@@ -209,79 +223,78 @@ public class OperationImpl implements Operation {
 		}
 	}
 
-	/* (非 Javadoc)
-	 * @see jp.kamoc.roonroom.lib.controller.Operation#setSchedule(jp.kamoc.roonroom.lib.controller.CleaningSchedule)
+	/*
+	 * (非 Javadoc)
+	 * 
+	 * @see
+	 * jp.kamoc.roonroom.lib.controller.Operation#setSchedule(jp.kamoc.roonroom
+	 * .lib.controller.CleaningSchedule)
 	 */
 	@Override
 	public void setSchedule(CleaningSchedule cleaningSchedule) {
 		Map<RRL.DAY, Time> schedule = cleaningSchedule.getSchedule();
-		commandSender.send(new SerialSequence(
-				OPCODE_SCHEDULE,
-				cleaningSchedule.getDays(),
-				schedule.get(RRL.DAY.SUNDAY).h,
-				schedule.get(RRL.DAY.SUNDAY).m,
-				schedule.get(RRL.DAY.MONDAY).h,
+		commandSender.send(new SerialSequence(OPCODE_SCHEDULE, cleaningSchedule
+				.getDays(), schedule.get(RRL.DAY.SUNDAY).h, schedule
+				.get(RRL.DAY.SUNDAY).m, schedule.get(RRL.DAY.MONDAY).h,
 				schedule.get(RRL.DAY.MONDAY).m,
 				schedule.get(RRL.DAY.TUESDAY).h,
+				schedule.get(RRL.DAY.TUESDAY).m, schedule
+						.get(RRL.DAY.WEDNESDAY).h, schedule
+						.get(RRL.DAY.WEDNESDAY).m, schedule
+						.get(RRL.DAY.TUESDAY).h,
 				schedule.get(RRL.DAY.TUESDAY).m,
-				schedule.get(RRL.DAY.WEDNESDAY).h,
-				schedule.get(RRL.DAY.WEDNESDAY).m,
-				schedule.get(RRL.DAY.TUESDAY).h,
-				schedule.get(RRL.DAY.TUESDAY).m,
-				schedule.get(RRL.DAY.FRIDAY).h,
-				schedule.get(RRL.DAY.FRIDAY).m,
-				schedule.get(RRL.DAY.SATURDAY).h,
-				schedule.get(RRL.DAY.SATURDAY).m
-				));
+				schedule.get(RRL.DAY.FRIDAY).h, schedule.get(RRL.DAY.FRIDAY).m,
+				schedule.get(RRL.DAY.SATURDAY).h, schedule
+						.get(RRL.DAY.SATURDAY).m));
 	}
-	
-	/* (非 Javadoc)
+
+	/*
+	 * (非 Javadoc)
+	 * 
 	 * @see jp.kamoc.roonroom.lib.controller.Operation#clearSchedule()
 	 */
 	@Override
 	public void clearSchedule() {
-		commandSender.send(new SerialSequence(
-				OPCODE_SCHEDULE, 0, 
-				0, 0, 
-				0, 0, 
-				0, 0, 
-				0, 0, 
-				0, 0, 
-				0, 0
-				));
-	}
-	
-	/* (非 Javadoc)
-	 * @see jp.kamoc.roonroom.lib.controller.Operation#setDayTime(jp.kamoc.roonroom.lib.controller.Day, int, int)
-	 */
-	@Override
-	public void setDayTime(RRL.DAY day, int hour, int min){
-		Time time = new Time(hour, min);
-		commandSender.send(new SerialSequence(
-				OPCODE_SET_DAY_TIME, 
-				day.getCode(), time.h, time.m));
+		commandSender.send(new SerialSequence(OPCODE_SCHEDULE, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0));
 	}
 
-	/* (非 Javadoc)
+	/*
+	 * (非 Javadoc)
+	 * 
+	 * @see
+	 * jp.kamoc.roonroom.lib.controller.Operation#setDayTime(jp.kamoc.roonroom
+	 * .lib.controller.Day, int, int)
+	 */
+	@Override
+	public void setDayTime(RRL.DAY day, int hour, int min) {
+		Time time = new Time(hour, min);
+		commandSender.send(new SerialSequence(OPCODE_SET_DAY_TIME, day
+				.getCode(), time.h, time.m));
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * 
 	 * @see jp.kamoc.roonroom.lib.controller.Operation#powerOff()
 	 */
 	@Override
 	public void powerOff() {
 		commandSender.send(new SerialSequence(OPCODE_POWER));
 	}
-	
-	/* (非 Javadoc)
+
+	/*
+	 * (非 Javadoc)
+	 * 
 	 * @see jp.kamoc.roonroom.lib.controller.Operation#drive(int, int)
 	 */
 	@Override
-	public void drive(int velocity, int radius){
+	public void drive(int velocity, int radius) {
 		int v = adjustVelocity(velocity);
 		int r = adjustRadius(radius);
 		int[] v2 = convertTwoSequence(v);
 		int[] r2 = convertTwoSequence(r);
-		commandSender.send(new SerialSequence(
-				OPCODE_DRIVE, 
-				v2[0], v2[1], 
+		commandSender.send(new SerialSequence(OPCODE_DRIVE, v2[0], v2[1],
 				r2[0], r2[1]));
 	}
 
@@ -291,12 +304,9 @@ public class OperationImpl implements Operation {
 		int l = adjustVelocity(leftVelocity);
 		int[] r2 = convertTwoSequence(r);
 		int[] l2 = convertTwoSequence(l);
-		commandSender.send(new SerialSequence(
-				OPCODE_DRIVE_DIRECT,
-				r2[0], r2[1],
-				l2[0], l2[1]));
+		commandSender.send(new SerialSequence(OPCODE_DRIVE_DIRECT, r2[0],
+				r2[1], l2[0], l2[1]));
 	}
-
 
 	@Override
 	public void drivePWM(int rightWheel, int leftWheel) {
@@ -304,63 +314,48 @@ public class OperationImpl implements Operation {
 		int l = adjustWheelPWM(leftWheel);
 		int[] r2 = convertTwoSequence(r);
 		int[] l2 = convertTwoSequence(l);
-		commandSender.send(new SerialSequence(
-				OPCODE_DRIVE_PWM,
-				r2[0], r2[1],
+		commandSender.send(new SerialSequence(OPCODE_DRIVE_PWM, r2[0], r2[1],
 				l2[0], l2[1]));
 	}
 
 	@Override
 	public void motors(MotorConfig motorConfig) {
-		commandSender.send(new SerialSequence(
-				OPCODE_MOTORS, 
-				motorConfig.getValue()));
+		commandSender.send(new SerialSequence(OPCODE_MOTORS, motorConfig
+				.getValue()));
 	}
-
 
 	@Override
 	public void motorsPWM(int mainBrush, int sideBrush, int vacuum) {
-		commandSender.send(new SerialSequence(
-				OPCODE_PWM_MOTORS,
-				adjustBrushPWM(mainBrush),
-				adjustBrushPWM(sideBrush),
+		commandSender.send(new SerialSequence(OPCODE_PWM_MOTORS,
+				adjustBrushPWM(mainBrush), adjustBrushPWM(sideBrush),
 				adjustVacuumPWM(vacuum)));
 	}
 
-
 	@Override
 	public void led(LEDConfig ledConfig) {
-		commandSender.send(new SerialSequence(
-				OPCODE_LEDS,
-				ledConfig.getValue(),
-				ledConfig.getColor(),
-				ledConfig.getIntensity()));
+		commandSender.send(new SerialSequence(OPCODE_LEDS,
+				ledConfig.getValue(), ledConfig.getColor(), ledConfig
+						.getIntensity()));
 	}
-
 
 	@Override
 	public void schedulingLed(SchedulingLEDConfig config) {
-		commandSender.send(new SerialSequence(
-				OPCODE_SCHEDULING_LEDS,
-				config.getWeekdayValue(),
-				config.getSchedulingValue()));
+		commandSender.send(new SerialSequence(OPCODE_SCHEDULING_LEDS, config
+				.getWeekdayValue(), config.getSchedulingValue()));
 	}
-
 
 	@Override
 	public void digitLedRaw(DigitLEDConfig config) {
-		commandSender.send(new SerialSequence(
-				OPCODE_DIGIT_LEDS_RAW,
-				config.getValue(RRL.DIGIT_LED.RAW_3),
-				config.getValue(RRL.DIGIT_LED.RAW_2),
-				config.getValue(RRL.DIGIT_LED.RAW_1),
-				config.getValue(RRL.DIGIT_LED.RAW_0)));
+		commandSender.send(new SerialSequence(OPCODE_DIGIT_LEDS_RAW, config
+				.getValue(RRL.DIGIT_LED.RAW_3), config
+				.getValue(RRL.DIGIT_LED.RAW_2), config
+				.getValue(RRL.DIGIT_LED.RAW_1), config
+				.getValue(RRL.DIGIT_LED.RAW_0)));
 	}
-
 
 	@Override
 	public void digitLedRaw(int n) {
-		int[] r = new int[]{ 10, 10, 10, 10 };
+		int[] r = new int[] { 10, 10, 10, 10 };
 		if (n >= 0) {
 			r[0] = n % 10;
 		}
@@ -373,11 +368,9 @@ public class OperationImpl implements Operation {
 		if (n >= 1000) {
 			r[3] = (n / 1000) % 10;
 		}
-		commandSender.send(new SerialSequence(
-				OPCODE_DIGIT_LEDS_RAW,
-				r[3], r[2], r[1], r[0]));
+		commandSender.send(new SerialSequence(OPCODE_DIGIT_LEDS_RAW, r[3],
+				r[2], r[1], r[0]));
 	}
-
 
 	@Override
 	public void digitLedRaw(String str) {
@@ -401,11 +394,9 @@ public class OperationImpl implements Operation {
 		if (asciiCodes.length > 3) {
 			r[3] = asciiCodes[3];
 		}
-		commandSender.send(new SerialSequence(
-				OPCODE_DIGIT_LEDS_ASCII,
-				r[0], r[1], r[2], r[3]));
+		commandSender.send(new SerialSequence(OPCODE_DIGIT_LEDS_ASCII, r[0],
+				r[1], r[2], r[3]));
 	}
-
 
 	@Override
 	public void button(RRL.BUTTON... buttons) {
@@ -418,35 +409,47 @@ public class OperationImpl implements Operation {
 		commandSender.send(new SerialSequence(OPCODE_BUTTONS, val));
 	}
 
-
 	@Override
 	public void setSong(SONG number, Song song) {
-		commandSender.send(new SerialSequence(OPCODE_SONG, number.getCode(), song.length()));
+		commandSender.send(new SerialSequence(OPCODE_SONG, number.getCode(),
+				song.length()));
 		commandSender.send(new SerialSequence(song.getSequence()));
 	}
-
 
 	@Override
 	public void playSong(SONG number) {
 		commandSender.send(new SerialSequence(OPCODE_PLAY, number.getCode()));
 	}
 
-
 	@Override
 	public void listen(SensorListener listener) {
 		packetListener.setListener(listener);
-		commandSender.send(new SerialSequence(OPCODE_SENSORS, listener.getPacketId()));
+		commandSender.send(new SerialSequence(OPCODE_SENSORS, listener
+				.getPacketId()));
 	}
-
 
 	@Override
 	public void pauseStream() {
-		commandSender.send(new SerialSequence(OPCODE_PAUSE_RESUME, STREAM_PAUSE));
+		commandSender
+				.send(new SerialSequence(OPCODE_PAUSE_RESUME, STREAM_PAUSE));
 	}
-
 
 	@Override
 	public void resumeStream() {
-		commandSender.send(new SerialSequence(OPCODE_PAUSE_RESUME, STREAM_RESUME));
+		commandSender.send(new SerialSequence(OPCODE_PAUSE_RESUME,
+				STREAM_RESUME));
+	}
+
+	@Override
+	public void stream(StreamListener listener) {
+		int n = listener.getNumberOfListeners();
+		int[] sequence = new int[n + 2];
+		int i = 0;
+		sequence[i++] = OPCODE_STREAM;
+		sequence[i++] = n;
+		for (Integer packetId : listener.getPacketIds()) {
+			sequence[i++] = packetId;
+		}
+		commandSender.send(new SerialSequence(sequence));
 	}
 }

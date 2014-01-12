@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import jp.kamoc.roonroom.lib.listener.sensor.SensorListener;
 import jp.kamoc.roonroom.lib.serial.SerialAdapter;
 
 public class PacketListener extends Thread {

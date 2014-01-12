@@ -3,7 +3,8 @@ package jp.kamoc.roonroom.lib.operation;
 import jp.kamoc.roonroom.lib.constants.RRL;
 import jp.kamoc.roonroom.lib.constants.RRL.BUTTON;
 import jp.kamoc.roonroom.lib.constants.RRL.SONG;
-import jp.kamoc.roonroom.lib.listener.SensorListener;
+import jp.kamoc.roonroom.lib.listener.StreamListener;
+import jp.kamoc.roonroom.lib.listener.sensor.SensorListener;
 
 public class FullMode implements Operation {
 	private OperationImpl operation;
@@ -130,6 +131,11 @@ public class FullMode implements Operation {
 	@Override
 	public void resumeStream() {
 		operation.resumeStream();
+	}
+
+	@Override
+	public void stream(StreamListener listener) {
+		operation.stream(listener);
 	}
 
 }

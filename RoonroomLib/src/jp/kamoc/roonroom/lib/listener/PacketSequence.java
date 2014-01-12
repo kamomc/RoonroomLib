@@ -20,6 +20,6 @@ public class PacketSequence implements Iterable<Byte> {
 
 	@Override
 	public String toString() {
-		return "PacketSequence [packetSequence=" + packetSequence + "]";
+		return "PacketSequence" + packetSequence;
 	}
 }

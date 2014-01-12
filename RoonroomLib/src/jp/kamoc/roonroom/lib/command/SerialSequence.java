@@ -42,6 +42,6 @@ public class SerialSequence implements Iterable<Integer> {
 
 	@Override
 	public String toString() {
-		return "SerialSequence [serialSequence=" + serialSequence + "]";
+		return "SerialSequence" + serialSequence;
 	}
 }

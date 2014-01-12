@@ -6,6 +6,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import jp.kamoc.roonroom.lib.serial.SerialAdapter;
 import jp.kamoc.roonroom.lib.serial.SerialConnectionException;
 
+/**
+ * コマンド送信クラス
+ * @author kamoc
+ *
+ */
 public class CommandSender extends Thread {
 	private BlockingQueue<SerialSequence> commandQueue = new LinkedBlockingQueue<SerialSequence>();
 	private SerialAdapter serialAdapter;
@@ -16,15 +21,27 @@ public class CommandSender extends Thread {
 	private long sendStartTime = 0;
 	private boolean loop = true;
 
+	/**
+	 * コンストラクタ
+	 * @param serialAdapter 利用機器に応じたSerialAdapterのインスタンス
+	 */
 	public CommandSender(SerialAdapter serialAdapter) {
 		this.serialAdapter = serialAdapter;
 		start();
 	}
 
+	/**
+	 * シリアルシーケンスをルンバに送信する
+	 * @param serialSequence 送信するシリアルシーケンス
+	 */
 	public void send(SerialSequence serialSequence) {
 		commandQueue.add(serialSequence);
 	}
 
+	/**
+	 * シリアルシーケンスをルンバに送信する間隔を設定する
+	 * @param interval 送信間隔(ミリ秒)
+	 */
 	public void setInterval(int interval) {
 		if (interval < MIN_INTERVAL) {
 			return;
@@ -75,10 +92,17 @@ public class CommandSender extends Thread {
 		return true;
 	}
 
+	/**
+	 * シリアルシーケンスの送信におけるタイムアウト時間
+	 * @param timeout タイムアウト時間(ミリ秒)
+	 */
 	public void setTimeout(int timeout) {
 		this.timeout = timeout;
 	}
 
+	/**
+	 * コマンド送信スレッドを終了する
+	 */
 	public void finish(){
 		loop = false;
 	}

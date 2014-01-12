@@ -1,7 +1,8 @@
 package jp.kamoc.roonroom.lib.operation;
 
 import jp.kamoc.roonroom.lib.constants.RRL;
-import jp.kamoc.roonroom.lib.listener.SensorListener;
+import jp.kamoc.roonroom.lib.listener.StreamListener;
+import jp.kamoc.roonroom.lib.listener.sensor.SensorListener;
 
 public interface Operation {
 
@@ -52,4 +53,6 @@ public interface Operation {
 	abstract void pauseStream();
 	
 	abstract void resumeStream();
+	
+	abstract void stream(StreamListener listener);
 }

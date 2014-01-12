@@ -9,7 +9,8 @@ import jp.kamoc.roonroom.lib.constants.RRL;
 import jp.kamoc.roonroom.lib.constants.RRL.BUTTON;
 import jp.kamoc.roonroom.lib.constants.RRL.SONG;
 import jp.kamoc.roonroom.lib.listener.PacketListener;
-import jp.kamoc.roonroom.lib.listener.SensorListener;
+import jp.kamoc.roonroom.lib.listener.StreamListener;
+import jp.kamoc.roonroom.lib.listener.sensor.SensorListener;
 import jp.kamoc.roonroom.lib.operation.CleaningSchedule;
 import jp.kamoc.roonroom.lib.operation.DigitLEDConfig;
 import jp.kamoc.roonroom.lib.operation.FullMode;
@@ -189,6 +190,11 @@ public class Controller implements Operation {
 	@Override
 	public void resumeStream() {
 		currentOperatingMode.resumeStream();
+	}
+
+	@Override
+	public void stream(StreamListener listener) {
+		currentOperatingMode.stream(listener);
 	}
 
 }
