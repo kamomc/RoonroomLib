@@ -13,10 +13,12 @@ import jp.kamoc.roonroom.lib.operation.Operation;
 
 /**
  * センサー値取得要求と応答を扱うクラス
+ * 
  * @author kamoc
- *
+ * 
  */
 public class InputRequestHandler {
+	private static final int PACKET_ID_STREAM = 19;
 	private BlockingQueue<SensorListener> listenerQueue = new LinkedBlockingQueue<SensorListener>();
 	private SensorListener processingListener;
 	private Operation operation;
@@ -24,7 +26,9 @@ public class InputRequestHandler {
 
 	/**
 	 * コンストラクタ
-	 * @param packetListener パケット応答を行うオブジェクト
+	 * 
+	 * @param packetListener
+	 *            パケット応答を行うオブジェクト
 	 */
 	public InputRequestHandler(PacketListener packetListener) {
 		packetListener.setInputRequestHandler(this);
@@ -32,8 +36,11 @@ public class InputRequestHandler {
 
 	/**
 	 * センサー値の取得を要求する
-	 * @param operation オペレーションオブジェクト
-	 * @param listener 取得するセンサー値のリスナ
+	 * 
+	 * @param operation
+	 *            オペレーションオブジェクト
+	 * @param listener
+	 *            取得するセンサー値のリスナ
 	 */
 	public void listen(Operation operation, SensorListener listener) {
 		this.operation = operation;
@@ -45,7 +52,9 @@ public class InputRequestHandler {
 
 	/**
 	 * ストリーミングを停止する
-	 * @param operation オペレーションオブジェクト
+	 * 
+	 * @param operation
+	 *            オペレーションオブジェクト
 	 */
 	public void pauseStream(Operation operation) {
 		this.operation = operation;
@@ -54,7 +63,9 @@ public class InputRequestHandler {
 
 	/**
 	 * ストリーミングを再開する
-	 * @param operation オペレーションオブジェクト
+	 * 
+	 * @param operation
+	 *            オペレーションオブジェクト
 	 */
 	public void resumeStream(Operation operation) {
 		this.operation = operation;
@@ -63,7 +74,8 @@ public class InputRequestHandler {
 
 	/**
 	 * ストリーミングを開始する
-	 * @param operation 
+	 * 
+	 * @param operation
 	 * @param listener
 	 */
 	public void stream(Operation operation, StreamListener listener) {
@@ -78,7 +90,9 @@ public class InputRequestHandler {
 
 	/**
 	 * パケットを受信した時に呼ばれるメソッド
-	 * @param packetSequence パケット
+	 * 
+	 * @param packetSequence
+	 *            パケット
 	 */
 	public void receivePacketSequence(PacketSequence packetSequence) {
 		for (Byte packet : packetSequence) {
@@ -90,7 +104,7 @@ public class InputRequestHandler {
 		if (processingBytes.size() < processingListener.getDataBytes()) {
 			return;
 		}
-		if (processingListener instanceof StreamListener) {
+		if (processingListener.getPacketId() == PACKET_ID_STREAM) {
 			stream();
 		} else {
 			listen();
@@ -103,9 +117,27 @@ public class InputRequestHandler {
 		for (int i = 0; i < processingListener.getDataBytes(); i++) {
 			bytes[i] = processingBytes.remove(0);
 		}
-		for (int i = 0; i < bytes[1]; i++) {
-			//TODO:ここから実装
+		if (!checksum(bytes)) {
+			processingBytes.clear();
+			return;
 		}
+		StreamListener streamListener = (StreamListener) processingListener;
+		int offset = 2;
+		while (offset < bytes.length - 1) {
+			int packetId = bytes[offset++];
+			List<SensorListener> listeners = streamListener
+					.getListenerList(packetId);
+			SensorListener headListener = listeners.get(0);
+			int dataBytes = headListener.getDataBytes();
+			byte[] byteValue = getValueBytes(bytes, offset, dataBytes);
+			int value = convertBytesToInt(byteValue, headListener.isSigned());
+			for (SensorListener listener : listeners) {
+				listener.onReceive(value);
+			}
+			offset += dataBytes;
+		}
+		processingBytes.clear();
+		return;
 	}
 
 	private void listen() {
@@ -120,6 +152,25 @@ public class InputRequestHandler {
 		if (listenerQueue.size() != 0) {
 			send();
 		}
+	}
+
+	private boolean checksum(byte[] bytes) {
+		byte sum = 0;
+		for (int i = 1; i < bytes.length; i++) {
+			sum += bytes[i];
+		}
+		if ((sum & 0xFF) == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	private byte[] getValueBytes(byte[] src, int offset, int length) {
+		byte[] result = new byte[length];
+		for (int i = 0; i < length; i++) {
+			result[i] = src[offset + i];
+		}
+		return result;
 	}
 
 	private Integer convertBytesToInt(byte[] bytes, boolean isSigned) {

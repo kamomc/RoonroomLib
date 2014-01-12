@@ -54,7 +54,12 @@ public class StreamListener implements SensorListener {
 		}
 	}
 
-	private List<SensorListener> getListenerList(int packetId) {
+	/**
+	 * パケットIDを指定して登録されているリスナを取得する
+	 * @param packetId パケットID
+	 * @return リスナのリスト
+	 */
+	public List<SensorListener> getListenerList(int packetId) {
 		return listenerMap.get(packetId);
 	}
 
