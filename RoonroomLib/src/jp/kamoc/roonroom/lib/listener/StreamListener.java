@@ -9,8 +9,9 @@ import jp.kamoc.roonroom.lib.listener.sensor.SensorListener;
 
 /**
  * ストリームリスナ
+ * 
  * @author kamoc
- *
+ * 
  */
 public class StreamListener implements SensorListener {
 	private Map<Integer, List<SensorListener>> listenerMap = new HashMap<Integer, List<SensorListener>>();
@@ -24,7 +25,9 @@ public class StreamListener implements SensorListener {
 
 	/**
 	 * センサリスナを追加する
-	 * @param listener 追加するリスナ
+	 * 
+	 * @param listener
+	 *            追加するリスナ
 	 */
 	public void add(SensorListener listener) {
 		List<SensorListener> listenerList = getListenerList(listener
@@ -40,7 +43,9 @@ public class StreamListener implements SensorListener {
 
 	/**
 	 * センサリスナを削除する
-	 * @param listener 削除するリスナ
+	 * 
+	 * @param listener
+	 *            削除するリスナ
 	 */
 	public void remove(SensorListener listener) {
 		List<SensorListener> listenerList = getListenerList(listener
@@ -56,7 +61,9 @@ public class StreamListener implements SensorListener {
 
 	/**
 	 * パケットIDを指定して登録されているリスナを取得する
-	 * @param packetId パケットID
+	 * 
+	 * @param packetId
+	 *            パケットID
 	 * @return リスナのリスト
 	 */
 	public List<SensorListener> getListenerList(int packetId) {
@@ -65,6 +72,7 @@ public class StreamListener implements SensorListener {
 
 	/**
 	 * 登録されているリスナのパケットID数を取得する
+	 * 
 	 * @return パケットID数
 	 */
 	public int size() {
@@ -73,6 +81,7 @@ public class StreamListener implements SensorListener {
 
 	/**
 	 * パケットIDの配列を取得する
+	 * 
 	 * @return パケットIDの配列
 	 */
 	public int[] getPacketIds() {
@@ -86,7 +95,13 @@ public class StreamListener implements SensorListener {
 
 	@Override
 	public int getDataBytes() {
-		return size()+1;
+		int dataBytes = 3; //header, n, checksum
+		for (Integer key : listenerMap.keySet()) {
+			dataBytes++;
+			SensorListener listener = listenerMap.get(key).get(0);
+			dataBytes += listener.getDataBytes();
+		}
+		return dataBytes;
 	}
 
 	@Override
@@ -102,6 +117,6 @@ public class StreamListener implements SensorListener {
 	@Override
 	public void onReceive(int value) {
 		// TODO 自動生成されたメソッド・スタブ
-		
+
 	}
 }

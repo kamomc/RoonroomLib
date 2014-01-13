@@ -8,8 +8,9 @@ import jp.kamoc.roonroom.lib.serial.SerialAdapter;
 
 /**
  * パケットリスナ
+ * 
  * @author kamoc
- *
+ * 
  */
 public class PacketListener extends Thread {
 	private BlockingQueue<PacketSequence> packetQueue = new LinkedBlockingQueue<PacketSequence>();
@@ -20,7 +21,9 @@ public class PacketListener extends Thread {
 
 	/**
 	 * コンストラクタ
-	 * @param serialAdapter シリアルアダプタ
+	 * 
+	 * @param serialAdapter
+	 *            シリアルアダプタ
 	 */
 	public PacketListener(SerialAdapter serialAdapter) {
 		serialAdapter.setPacketListener(this);
@@ -29,15 +32,16 @@ public class PacketListener extends Thread {
 
 	/**
 	 * インスタンスをセットする
+	 * 
 	 * @param inputRequestHandler
 	 */
 	public void setInputRequestHandler(InputRequestHandler inputRequestHandler) {
 		this.inputRequestHandler = inputRequestHandler;
 	}
 
-
 	/**
 	 * パケットを受信した時に呼ばれる
+	 * 
 	 * @param packetSequence
 	 */
 	public void receive(PacketSequence packetSequence) {
@@ -47,7 +51,9 @@ public class PacketListener extends Thread {
 
 	/**
 	 * 応答確認周期を設定する
-	 * @param interval 応答確認周期(ミリ秒)
+	 * 
+	 * @param interval
+	 *            応答確認周期(ミリ秒)
 	 */
 	public void setInterval(int interval) {
 		if (interval < MIN_INTERVAL) {
@@ -59,7 +65,7 @@ public class PacketListener extends Thread {
 	@Override
 	public void run() {
 		while (loop) {
-			if (packetQueue.size() != 0) {
+			if (packetQueue.size() != 0 && inputRequestHandler != null) {
 				PacketSequence packetSequence = packetQueue.remove();
 				inputRequestHandler.receivePacketSequence(packetSequence);
 			}

@@ -29,8 +29,9 @@ import jp.kamoc.roonroom.lib.serial.SerialConnectionException;
 
 /**
  * コントローラクラス
+ * 
  * @author kamoc
- *
+ * 
  */
 public class Controller implements Operation {
 	private Operation currentOperatingMode;
@@ -42,7 +43,9 @@ public class Controller implements Operation {
 
 	/**
 	 * コンストラクタ
-	 * @param serialAdapter シリアルアダプタ
+	 * 
+	 * @param serialAdapter
+	 *            シリアルアダプタ
 	 */
 	public Controller(SerialAdapter serialAdapter) {
 		this.serialAdapter = serialAdapter;
@@ -71,6 +74,7 @@ public class Controller implements Operation {
 
 	/**
 	 * 状態を無視して強制的にシリアルシーケンスを送信する
+	 * 
 	 * @deprecated
 	 * @param serialSequence
 	 */
@@ -82,6 +86,7 @@ public class Controller implements Operation {
 	 * シリアル通信と、実行中のスレッドを終了する
 	 */
 	public void finish() {
+		inputRequestHandler.pauseStream(currentOperatingMode);
 		serialAdapter.close();
 		commandSender.finish();
 		packetListener.finish();

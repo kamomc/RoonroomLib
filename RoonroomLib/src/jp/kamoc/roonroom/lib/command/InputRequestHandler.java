@@ -21,6 +21,7 @@ public class InputRequestHandler {
 	private static final int PACKET_ID_STREAM = 19;
 	private BlockingQueue<SensorListener> listenerQueue = new LinkedBlockingQueue<SensorListener>();
 	private SensorListener processingListener;
+	private StreamListener streamListener;
 	private Operation operation;
 	private List<Byte> processingBytes = new ArrayList<Byte>();
 
@@ -35,7 +36,7 @@ public class InputRequestHandler {
 	}
 
 	/**
-	 * センサー値の取得を要求する
+	 * センサー値の取得を要求する(ストリーミング中は無視される)
 	 * 
 	 * @param operation
 	 *            オペレーションオブジェクト
@@ -43,6 +44,9 @@ public class InputRequestHandler {
 	 *            取得するセンサー値のリスナ
 	 */
 	public void listen(Operation operation, SensorListener listener) {
+		if (isStreaming()) {
+			return;
+		}
 		this.operation = operation;
 		listenerQueue.add(listener);
 		if (processingListener == null) {
@@ -59,6 +63,13 @@ public class InputRequestHandler {
 	public void pauseStream(Operation operation) {
 		this.operation = operation;
 		operation.pauseStream();
+		if (processingListener == null) {
+			return;
+		}
+		if (processingListener.getPacketId() == PACKET_ID_STREAM) {
+			streamListener = (StreamListener) processingListener;
+			processingListener = null;
+		}
 	}
 
 	/**
@@ -70,6 +81,9 @@ public class InputRequestHandler {
 	public void resumeStream(Operation operation) {
 		this.operation = operation;
 		operation.resumeStream();
+		if (streamListener != null) {
+			processingListener = streamListener;
+		}
 	}
 
 	/**
@@ -80,12 +94,19 @@ public class InputRequestHandler {
 	 */
 	public void stream(Operation operation, StreamListener listener) {
 		this.operation = operation;
-		operation.stream(listener);
+		listenerQueue.add(listener);
+		if (processingListener == null) {
+			send();
+		}
 	}
 
 	private void send() {
 		processingListener = listenerQueue.remove();
-		operation.listen(processingListener);
+		if (processingListener.getPacketId() == PACKET_ID_STREAM) {
+			operation.stream((StreamListener) processingListener);
+		} else {
+			operation.listen(processingListener);
+		}
 	}
 
 	/**
@@ -95,24 +116,28 @@ public class InputRequestHandler {
 	 *            パケット
 	 */
 	public void receivePacketSequence(PacketSequence packetSequence) {
-		for (Byte packet : packetSequence) {
-			processingBytes.add(packet);
-		}
 		if (processingListener == null) {
 			return;
+		}
+		for (Byte packet : packetSequence) {
+			processingBytes.add(packet);
 		}
 		if (processingBytes.size() < processingListener.getDataBytes()) {
 			return;
 		}
 		if (processingListener.getPacketId() == PACKET_ID_STREAM) {
-			stream();
+			try {
+				stream();
+			} catch (Exception e) {
+				processingBytes.clear();
+			}
 		} else {
 			listen();
 		}
 
 	}
 
-	private void stream() {
+	private void stream() throws Exception {
 		byte[] bytes = new byte[processingListener.getDataBytes()];
 		for (int i = 0; i < processingListener.getDataBytes(); i++) {
 			bytes[i] = processingBytes.remove(0);
@@ -155,9 +180,11 @@ public class InputRequestHandler {
 	}
 
 	private boolean checksum(byte[] bytes) {
-		byte sum = 0;
-		for (int i = 1; i < bytes.length; i++) {
-			sum += bytes[i];
+		int sum = 0;
+		for (int i = 0; i < bytes.length; i++) {
+			byte[] b = new byte[1];
+			b[0] = bytes[i];
+			sum += convertBytesToInt(b, false);
 		}
 		if ((sum & 0xFF) == 0) {
 			return true;
@@ -188,6 +215,16 @@ public class InputRequestHandler {
 			result = result | b;
 		}
 		return result;
+	}
+
+	private boolean isStreaming() {
+		if (processingListener == null) {
+			return false;
+		}
+		if (processingListener.getPacketId() == PACKET_ID_STREAM) {
+			return false;
+		}
+		return true;
 	}
 
 }
