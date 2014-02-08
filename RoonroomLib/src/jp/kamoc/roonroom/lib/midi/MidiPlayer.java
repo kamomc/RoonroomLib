@@ -1,0 +1,198 @@
+package jp.kamoc.roonroom.lib.midi;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import jp.kamoc.roonroom.lib.constants.RRL;
+import jp.kamoc.roonroom.lib.controller.Controller;
+import jp.kamoc.roonroom.lib.operation.Song;
+import jp.kamoc.roonroom.lib.operation.Song.Note;
+
+import com.leff.midi.MidiFile;
+import com.leff.midi.MidiTrack;
+
+/**
+ * MIDI再生クラス ルンバは和音を演奏できないため、単音のトラックに自動分割される。
+ * 
+ * @author kamoc
+ * 
+ */
+public class MidiPlayer {
+
+	private static final int ROOMBA_TICK = 64;
+	private Controller controller;
+	private RRL.SONG playing;
+	private List<SerialSong> songList = new ArrayList<SerialSong>();
+	private List<List<MidiNote>> separatedTracks;
+	private List<NoteEventListener> listeners = new ArrayList<NoteEventListener>();
+	private long startAt;
+	private int playingNo;
+	private boolean pause;
+	private long INTERVAL = 5;
+	private MidiConverter converter;
+	private Song playing1;
+	private Song playing0;
+
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param controller
+	 * @param is
+	 *            MIDIファイル
+	 */
+	public MidiPlayer(final Controller controller, InputStream is) {
+		this.controller = controller;
+		load(is);
+	}
+
+	private void load(InputStream is) {
+		MidiFile midiFile;
+		try {
+			midiFile = new MidiFile(is);
+			int resolution = midiFile.getResolution();
+			List<MidiTrack> tracks = midiFile.getTracks();
+			converter = new MidiConverter(resolution);
+			converter.convert(tracks);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * 音符再生イベントリスナを追加する
+	 * 
+	 * @param listener
+	 */
+	public void addNoteEventListener(NoteEventListener listener) {
+		listeners.add(listener);
+	}
+
+	/**
+	 * 音符再生イベントリスナを削除する
+	 * 
+	 * @param listener
+	 */
+	public void removeNoteEventListener(NoteEventListener listener) {
+		listeners.remove(listener);
+	}
+
+	/**
+	 * 指定したトラックを再生する
+	 * 
+	 * @param trackNumber
+	 */
+	public void play(final int trackNumber) {
+		startAt = System.currentTimeMillis();
+		songList = converter.getSongList(trackNumber);
+		playingNo = -1;
+		playing = RRL.SONG.NUMBER_0;
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				SerialSong nextSong = songList.get(0);
+				setSong(controller, nextSong);
+				while (!pause) {
+					if (nextSong.getStartAt() <= System.currentTimeMillis()
+							- startAt) {
+						if (playingNo == songList.size() - 1) {
+							// 最後の音符演奏中は何もしない
+							;
+						} else if (playingNo == songList.size() - 2) {
+							// 最後の手前では演奏開始のみ行う
+							playSong(controller);
+							playingNo++;
+						} else {
+							// それ以外では演奏開始と次のロードを行う
+							playSong(controller);
+							playingNo++;
+							nextSong = songList.get(playingNo + 1);
+							setSong(controller, nextSong);
+						}
+					}
+					try {
+						Thread.sleep(INTERVAL);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+	}
+
+	/**
+	 * トラックの数を取得する
+	 * 
+	 * @return トラックの数
+	 */
+	public int trackSize() {
+		return separatedTracks.size();
+	}
+
+	private void playSong(final Controller controller) {
+		noteOff();
+		controller.changeMode(RRL.OPERATIONG_MODE.PASSIVE);
+		controller.changeMode(RRL.OPERATIONG_MODE.SAFE);
+		final Song playingSong;
+		if (playing.equals(RRL.SONG.NUMBER_0)) {
+			controller.playSong(RRL.SONG.NUMBER_1);
+			playing = RRL.SONG.NUMBER_1;
+			playingSong = playing1;
+		} else {
+			controller.playSong(RRL.SONG.NUMBER_0);
+			playing = RRL.SONG.NUMBER_0;
+			playingSong = playing0;
+		}
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				List<Note> notes = playingSong.getNotes();
+				for (Note note : notes) {
+					if (note.pitch != Song.NO_SOUND_PITCH) {
+						noteOn(note);
+					}
+					try {
+						Thread.sleep(note.duration * 1000 / ROOMBA_TICK);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					if (note.pitch != Song.NO_SOUND_PITCH) {
+						noteOff();
+					}
+				}
+			}
+		}).start();
+	}
+
+	private void setSong(final Controller controller, Song song) {
+		if (playing.equals(RRL.SONG.NUMBER_0)) {
+			controller.setSong(RRL.SONG.NUMBER_1, song);
+			playing1 = song;
+		} else {
+			controller.setSong(RRL.SONG.NUMBER_0, song);
+			playing0 = song;
+		}
+	}
+
+	/**
+	 * ノートオンのリスナを呼び出す
+	 * 
+	 * @param note
+	 *            再生する音符
+	 */
+	private void noteOn(Note note) {
+		for (NoteEventListener listener : listeners) {
+			listener.noteOn(note.pitch, note.duration);
+		}
+	}
+
+	/**
+	 * ノートオフのリスナを呼び出す
+	 */
+	private void noteOff() {
+		for (NoteEventListener listener : listeners) {
+			listener.noteOff();
+		}
+	}
+}
