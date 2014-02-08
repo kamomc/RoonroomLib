@@ -163,5 +163,21 @@ public class LEDConfig {
 		return intensity;
 	}
 	
+	/**
+	 * 全てのLEDを点灯する設定にする(バッテリーは緑色)
+	 */
+	public void allLighting(){
+		setCheckRobot(true);
+		setColor(MIN_COLOR);
+		setDebris(true);
+		setDock(true);
+		setIntensity(MAX_INTENSITY);
+		setSpot(true);
+		setReserved(RRL.LED_RESERVED.BIT_4, true);
+		setReserved(RRL.LED_RESERVED.BIT_5, true);
+		setReserved(RRL.LED_RESERVED.BIT_6, true);
+		setReserved(RRL.LED_RESERVED.BIT_7, true);
+	}
+	
 	
 }

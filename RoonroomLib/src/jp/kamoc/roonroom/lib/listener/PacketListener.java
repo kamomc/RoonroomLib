@@ -45,7 +45,7 @@ public class PacketListener extends Thread {
 	 * @param packetSequence
 	 */
 	public void receive(PacketSequence packetSequence) {
-		System.out.println(packetSequence);
+		// System.out.println(packetSequence);
 		packetQueue.add(packetSequence);
 	}
 

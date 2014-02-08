@@ -168,5 +168,27 @@ public class SchedulingLEDConfig {
 		}
 		return result;
 	}
+	
+	/**
+	 * 全てのLEDを点灯する設定にする
+	 */
+	public void allLighting(){
+		setAm(true);
+		setClock(true);
+		setColon(true);
+		setPm(true);
+		setSchedule(true);
+		setSchedulingReserved(RRL.SCHEDULING_LED_RESERVED.BIT_5, true);
+		setSchedulingReserved(RRL.SCHEDULING_LED_RESERVED.BIT_6, true);
+		setSchedulingReserved(RRL.SCHEDULING_LED_RESERVED.BIT_7, true);
+		setWeekday(RRL.DAY.FRIDAY, true);
+		setWeekday(RRL.DAY.MONDAY, true);
+		setWeekday(RRL.DAY.SATURDAY, true);
+		setWeekday(RRL.DAY.SUNDAY, true);
+		setWeekday(RRL.DAY.THURSDAY, true);
+		setWeekday(RRL.DAY.TUESDAY, true);
+		setWeekday(RRL.DAY.WEDNESDAY, true);
+		setWeekdayReserved(RRL.WEEKDAY_LED_RESERVED.BIT_7, true);
+	}
 
 }
