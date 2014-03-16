@@ -1,7 +1,7 @@
 package jp.kamoc.roonroom.lib.listener.sensor;
 
-import jp.kamoc.roonroom.lib.util.BitUtil;
-import jp.kamoc.roonroom.lib.util.BitUtil.BIT;
+import jp.kamoc.roonroom.lib.listener.BitUtil;
+import jp.kamoc.roonroom.lib.listener.BitUtil.BIT;
 
 /**
  * Charging Sources Available

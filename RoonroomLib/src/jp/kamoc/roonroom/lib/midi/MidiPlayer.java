@@ -1,16 +1,13 @@
 package jp.kamoc.roonroom.lib.midi;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import jp.kamoc.roonroom.lib.constants.RRL;
 import jp.kamoc.roonroom.lib.controller.Controller;
+import jp.kamoc.roonroom.lib.midi.meta.Midi;
 import jp.kamoc.roonroom.lib.operation.Song;
 import jp.kamoc.roonroom.lib.operation.Song.Note;
-
-import com.leff.midi.MidiFile;
-import com.leff.midi.MidiTrack;
 
 /**
  * MIDI再生クラス ルンバは和音を演奏できないため、単音のトラックに自動分割される。
@@ -30,34 +27,18 @@ public class MidiPlayer {
 	private int playingNo;
 	private boolean pause;
 	private long INTERVAL = 5;
-	private MidiConverter converter;
 	private Song playing1;
 	private Song playing0;
+	private boolean mute;
+	private boolean interrupt = true;
 
 	/**
 	 * コンストラクタ
 	 * 
 	 * @param controller
-	 * @param is
-	 *            MIDIファイル
 	 */
-	public MidiPlayer(final Controller controller, InputStream is) {
+	public MidiPlayer(final Controller controller) {
 		this.controller = controller;
-		load(is);
-	}
-
-	private void load(InputStream is) {
-		MidiFile midiFile;
-		try {
-			midiFile = new MidiFile(is);
-			int resolution = midiFile.getResolution();
-			List<MidiTrack> tracks = midiFile.getTracks();
-			converter = new MidiConverter(resolution);
-			converter.convert(tracks);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	/**
@@ -80,12 +61,13 @@ public class MidiPlayer {
 
 	/**
 	 * 指定したトラックを再生する
+	 * @param midi MIDIオブジェクト
+	 * @param trackNo 再生するトラックナンバー
 	 * 
-	 * @param trackNumber
 	 */
-	public void play(final int trackNumber) {
+	public void play(Midi midi, int trackNo) {
 		startAt = System.currentTimeMillis();
-		songList = converter.getSongList(trackNumber);
+		songList = MidiUtil.convert2SerialSong(midi, trackNo);
 		playingNo = -1;
 		playing = RRL.SONG.NUMBER_0;
 		new Thread(new Runnable() {
@@ -132,15 +114,21 @@ public class MidiPlayer {
 
 	private void playSong(final Controller controller) {
 		noteOff();
-		controller.changeMode(RRL.OPERATIONG_MODE.PASSIVE);
-		controller.changeMode(RRL.OPERATIONG_MODE.SAFE);
+		if (interrupt) {
+			controller.changeMode(RRL.OPERATIONG_MODE.PASSIVE);
+			controller.changeMode(RRL.OPERATIONG_MODE.SAFE);
+		}
 		final Song playingSong;
 		if (playing.equals(RRL.SONG.NUMBER_0)) {
-			controller.playSong(RRL.SONG.NUMBER_1);
+			if (!mute) {
+				controller.playSong(RRL.SONG.NUMBER_1);
+			}
 			playing = RRL.SONG.NUMBER_1;
 			playingSong = playing1;
 		} else {
-			controller.playSong(RRL.SONG.NUMBER_0);
+			if (!mute) {
+				controller.playSong(RRL.SONG.NUMBER_0);
+			}
 			playing = RRL.SONG.NUMBER_0;
 			playingSong = playing0;
 		}
@@ -195,4 +183,25 @@ public class MidiPlayer {
 			listener.noteOff();
 		}
 	}
+
+	/**
+	 * ミュートのON/OFFを設定する
+	 * 
+	 * @param mute
+	 *            ON:true, OFF:false
+	 */
+	public void mute(boolean mute) {
+		this.mute = mute;
+	}
+
+	/**
+	 * 割り込み演奏のON/OFFを設定する
+	 * 
+	 * @param interrupt
+	 *            true:割り込みON, false:割り込みOFF
+	 */
+	public void setInterrupt(boolean interrupt) {
+		this.interrupt = interrupt;
+	}
+
 }

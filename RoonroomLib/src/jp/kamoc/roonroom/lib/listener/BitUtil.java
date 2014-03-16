@@ -1,4 +1,4 @@
-package jp.kamoc.roonroom.lib.util;
+package jp.kamoc.roonroom.lib.listener;
 
 /**
  * ビットを取り扱うユーティリティ

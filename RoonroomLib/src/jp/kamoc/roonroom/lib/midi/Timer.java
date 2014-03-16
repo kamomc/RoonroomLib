@@ -1,5 +1,6 @@
 package jp.kamoc.roonroom.lib.midi;
 
+import android.annotation.SuppressLint;
 import jp.kamoc.roonroom.lib.controller.Controller;
 
 /**
@@ -25,6 +26,10 @@ public class Timer extends Thread {
 		this.controller = controller;
 	}
 	
+	/**
+	 * タイマー表示を開始する
+	 * @param startAt
+	 */
 	public void start(long startAt) {
 		this.startAt = startAt;
 		super.start();
@@ -54,6 +59,7 @@ public class Timer extends Thread {
 	/**
 	 * 経過時間をLEDに表示する
 	 */
+	@SuppressLint("DefaultLocale")
 	public void disp() {
 		String str = String.format("%1$04d", time);
 		controller.digitLedRaw(str);

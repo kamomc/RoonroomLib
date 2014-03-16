@@ -92,6 +92,16 @@ public class Controller implements Operation {
 		packetListener.finish();
 	}
 
+	/**
+	 * コマンドの送信間隔を設定する
+	 * 
+	 * @param interval
+	 *            送信間隔(ミリ秒)
+	 */
+	public void setInterval(int interval) {
+		commandSender.setInterval(interval);
+	}
+
 	@Override
 	public void start() {
 		currentOperatingMode.start();
