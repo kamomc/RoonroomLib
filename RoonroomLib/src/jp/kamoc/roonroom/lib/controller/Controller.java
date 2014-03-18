@@ -91,6 +91,14 @@ public class Controller implements Operation {
 		commandSender.finish();
 		packetListener.finish();
 	}
+	
+	/**
+	 * コードを設定する。(遠隔利用のサーバ側として利用する場合のみ設定)
+	 * @param code
+	 */
+	public void setCode(byte code){
+		commandSender.setHeaderCode(code);
+	}
 
 	/**
 	 * コマンドの送信間隔を設定する

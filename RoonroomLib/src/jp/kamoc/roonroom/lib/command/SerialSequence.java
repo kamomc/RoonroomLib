@@ -63,6 +63,14 @@ public class SerialSequence implements Iterable<Integer> {
 			listener.onFailure(e);
 		}
 	}
+	
+	/**
+	 * シーケンスの長さを取得する
+	 * @return シーケンスの長さ
+	 */
+	public int size(){
+		return serialSequence.size();
+	}
 
 	@Override
 	public String toString() {
