@@ -68,12 +68,14 @@ public class MidiPlayer {
 	public void play(Midi midi, int trackNo) {
 		startAt = System.currentTimeMillis();
 		songList = MidiUtil.convert2SerialSong(midi, trackNo);
+//		System.out.println("シリアルソングを生成しました。 Track: " + trackNo);
 		playingNo = -1;
 		playing = RRL.SONG.NUMBER_0;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				SerialSong nextSong = songList.get(0);
+//				System.out.println("スレッドを開始しました。Next Start At: " + nextSong.getStartAt());
 				setSong(controller, nextSong);
 				while (!pause) {
 					if (nextSong.getStartAt() <= System.currentTimeMillis()
@@ -85,11 +87,15 @@ public class MidiPlayer {
 							// 最後の手前では演奏開始のみ行う
 							playSong(controller);
 							playingNo++;
+//							System.out.println("最後の演奏を開始します。 At: " + (System.currentTimeMillis() - startAt) + ", #" + playingNo);
+							break;
 						} else {
 							// それ以外では演奏開始と次のロードを行う
 							playSong(controller);
 							playingNo++;
 							nextSong = songList.get(playingNo + 1);
+//							System.out.println("次の演奏を開始します。 At: " + (System.currentTimeMillis() - startAt) + ", #" + playingNo);
+//							System.out.println("Next Start At: " + nextSong.getStartAt());
 							setSong(controller, nextSong);
 						}
 					}
